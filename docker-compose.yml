@@ -1,0 +1,33 @@
+services:
+  db_container:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: Ingenieria_Software_DB
+      POSTGRES_USER: entrega_rapida
+      POSTGRES_PASSWORD: proyecto_123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U entrega_rapida -d Ingenieria_Software_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
+  django_container:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8001:8000"
+    env_file:
+      - .env
+    depends_on:
+      db_container:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
