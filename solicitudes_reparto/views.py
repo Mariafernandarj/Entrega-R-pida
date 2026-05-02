@@ -8,7 +8,6 @@ from django.shortcuts import render
 
 # Create your views here.
 
-@login_required
 def solicitudes_de_reparto(request):
     """Página principal: lista de pedidos disponibles para repartir """
     #Elimina pedidos expirados
@@ -20,7 +19,6 @@ def solicitudes_de_reparto(request):
     pedidos_disponibles = Pedido.objects.filter(estado='pendiente')
     return render(request, 'solicitudes_de_reparto.html', { 'pedidos': pedidos_disponibles })
     
-@login_required
 def aceptar_solicitud(request, pedido_id):
     """Acepta un pedido y lo asigna al repartidor """
     if request.method == 'POST':
@@ -45,7 +43,7 @@ def aceptar_solicitud(request, pedido_id):
         
     return redirect('solicitudes_de_reparto')
 
-@login_required
+
 def ver_pedidos(request):
     """Muestra los pedidos asignados al repartidor actual"""
     pedidos = Pedido.objects.filter(
