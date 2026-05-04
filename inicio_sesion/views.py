@@ -7,15 +7,15 @@ def iniciar_sesion(request):
         usuario_input = request.POST.get('usuario')
         contrasena_input = request.POST.get('contrasena')
         
-        # Valida los datos
+        # para validar los datos
         user = authenticate(request, username=usuario_input, password=contrasena_input)
         
         if user is not None:
             login(request, user)
-            # Redirige a la página principal tras un login exitoso
-            return redirect('pagina_principal') # Asegúrate de que esta URL exista en core/urls.py
+            # Manda a la pag principal trcuando es un inicio se sesion exitoso
+            return redirect('pagina_principal') 
         else:
-            # Flujo alternativo: Muestra mensaje de error
+            # Flujo alternativo, mensaje de error
             messages.error(request, "Nombre de usuario o contraseña incorrectos. Por favor, vuelve a intentarlo.")
             return redirect('iniciar_sesion')
             
