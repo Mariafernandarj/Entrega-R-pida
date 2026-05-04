@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Resultados de Búsqueda - RepártoYa{% endblock %}
+
+{% block content %}
+<div class="page-content">
+    
+    <!-- Barra de búsqueda -->
+    <div style="margin-bottom: 30px; text-align: center;">
+        <form method="GET" action="{% url 'buscar_comida' %}" style="display: inline-block; width: 100%; max-width: 600px;">
+            <input type="text" name="q" value="{{ texto_busqueda }}" placeholder="Busca comida o restaurantes" style="width: 80%; display: inline-block;">
+            <button type="submit" class="btn btn-primary" style="display: inline-block;">Buscar</button>
+        </form>
+    </div>
+
+    <h2 class="card-title" style="text-align: center; margin-bottom: 20px;">Resultado para el Platillo buscado</h2>
+
+    <!-- Errores (Flujos Alternativo y Excepcional) -->
+    {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- recuadros de resultados iterando la BD -->
+    <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+        <div class="card" style="width: 250px; text-align: center;">
+            <div style="background: #333; height: 120px; border-radius: 8px; margin-bottom: 10px;">
+            </div>
+            <h4>Restaurante 1</h4>
+            <a href="{% url 'restaurante_seleccionado' 1 %}" class="btn btn-ghost" style="margin-top: 10px;">Ver</a>
+        </div>
+        
+        <div class="card" style="width: 250px; text-align: center;">
+            <div style="background: #333; height: 120px; border-radius: 8px; margin-bottom: 10px;"></div>
+            <h4>Platillo BUSCADO</h4>
+            <p style="font-size: 12px; color: var(--text-muted);">Detalles</p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

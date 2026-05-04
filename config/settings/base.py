@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
     'inicio_sesion',
+    'busqueda_restaurante_comida', #nombre carpeta
 ]
 
 MIDDLEWARE = [

@@ -12,8 +12,8 @@ def iniciar_sesion(request):
         
         if user is not None:
             login(request, user)
-            # Manda a la pag principal trcuando es un inicio se sesion exitoso
-            return redirect('pagina_principal') 
+            # Manda a la pag principal cuando es un inicio se sesion exitoso
+            return redirect('buscar_comida') 
         else:
             # Flujo alternativo, mensaje de error
             messages.error(request, "Nombre de usuario o contraseña incorrectos. Por favor, vuelve a intentarlo.")
