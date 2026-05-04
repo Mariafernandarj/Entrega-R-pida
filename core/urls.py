@@ -1,7 +1,7 @@
-from django.contrib import admin
-from django.urls import path, include 
+from django.urls import path
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('core.urls')), # Esto conecta la lógica
+    # Le damos el name='pagina_principal' exacto que pide tu redirect
+    path('principal/', views.pagina_principal, name='pagina_principal'), 
 ]
