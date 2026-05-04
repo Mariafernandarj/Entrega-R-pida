@@ -65,7 +65,7 @@ class Command(BaseCommand):
         self.stdout.write('🛵 Creando repartidores...')
         datos = [
             {'username': 'repartidor1', 'nombre': 'Carlos López'},
-            #{'username': 'repartidor2', 'nombre': 'Ana García'},
+            {'username': 'repartidor2', 'nombre': 'Ana García'},
             #{'username': 'repartidor3', 'nombre': 'Luis Martínez'},
         ]
         repartidores = []

@@ -9,8 +9,7 @@ from django.shortcuts import render
 # Create your views here.
 
 # Repartidor hardcodeado :)
-REPARTIDOR_PRUEBA_ID = 1
-
+REPARTIDOR_PRUEBA_ID = 2
 def solicitudes_de_reparto(request):
     """Página principal: lista de pedidos disponibles para repartir """
     #Elimina pedidos expirados
