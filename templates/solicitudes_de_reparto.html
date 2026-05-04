@@ -50,12 +50,12 @@
         <td>
           <div class="restaurante-cell">
             <div class="restaurante-avatar">
-              {{ pedido.restaurante|first|upper }}
+              {{ pedido.restaurante.nombre|upper }}
             </div>
             <span class="restaurante-nombre">{{ pedido.restaurante }}</span>
           </div>
         </td>
-	
+	s
         <!-- Tiempo límite -->
         <td>
           <div class="tiempo-cell">

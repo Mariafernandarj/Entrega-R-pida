@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Pedido, Restaurante
+from .models import Pedido, Restaurante, Repartidor
 # Register your models here.
 
 @admin.register(Pedido)
@@ -14,3 +14,8 @@ class PedidoAdmin(admin.ModelAdmin):
 class RestauranteAdmin(admin.ModelAdmin):
     list_display = ('id', 'nombre')
     search_fields = ('nombre',)
+
+@admin.register(Repartidor)
+class RepartidorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nombre', 'user') 
+    search_fields = ('nombre', 'user__username')

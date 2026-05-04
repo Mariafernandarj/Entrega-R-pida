@@ -2,11 +2,14 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
-from .models import Pedido
+from .models import Pedido, Repartidor
 
 from django.shortcuts import render
 
 # Create your views here.
+
+# Repartidor hardcodeado :)
+REPARTIDOR_PRUEBA_ID = 1
 
 def solicitudes_de_reparto(request):
     """Página principal: lista de pedidos disponibles para repartir """
@@ -22,34 +25,49 @@ def solicitudes_de_reparto(request):
 def aceptar_solicitud(request, pedido_id):
     """Acepta un pedido y lo asigna al repartidor """
     if request.method == 'POST':
-        pedido = get_object_or_404(Pedido, id = pedido_id, estado = 'pendiente')
+        pedido = get_object_or_404(Pedido, id = pedido_id)
+        
         # Verifica si el pedidoexpiró
-        if pedido.esta_expirado():
+        if pedido.estado != 'pendiente' or pedido.esta_expirado():
             messages.warning(request, "Este pedido ya no está disponible")
             return redirect('solicitudes_de_reparto')
         try:
-            if not hasattr(request.user, 'repartidor'):
-                messages.error(request, 'No tienes perfil de repartidor')
-                return redirect('solicitudes_de_reparto')
-            pedido.repartidor = request.user.repartidor ##Puede cambiar depende del modelooo ojoooo##
-            pedido.estado = 'pendiente'
+            # HARDCODED para pruebas
+            repartidor = Repartidor.objects.get(id=REPARTIDOR_PRUEBA_ID)
+            pedido.repartidor = repartidor
+            pedido.estado = 'aceptado'
             pedido.save()
-            messages.success(request, "Pedido aceptado correctamente")
+
+            messages.success(
+                request,
+                f"Pedido #{pedido.id} aceptado y asignado a {repartidor.nombre}."
+            )
             return redirect('ver_pedidos')
+        
+        except Repartidor.DoesNotExist:
+            messages.error(
+                request,
+                 f"No existe un repartidor con ID {REPARTIDOR_PRUEBA_ID}. "
+            )            
         except Exception as e:
             #Error al guardar
-            print(e)
+            print(f"Error al aceptar pedido #{pedido_id}: {e}")
             messages.error(request, "Ocurrió un error al aceptar el pedido")
         
     return redirect('solicitudes_de_reparto')
 
 
 def ver_pedidos(request):
-    """Muestra los pedidos asignados al repartidor actual"""
-    pedidos = Pedido.objects.filter(
-        repartidor = request.user.repartidor,
-        estado = 'asignado'
-    )
+    #"""Muestra los pedidos asignados al repartidor actual"""
+    """Muestra los pedidos asignados al repartidor de prueba."""
+    try:
+        repartidor = Repartidor.objects.get(id=REPARTIDOR_PRUEBA_ID)
+        pedidos = Pedido.objects.filter(
+            repartidor = repartidor,
+            estado = 'aceptado'
+        )
+    except Repartidor.DoesNotExist:
+        pedidos = Pedido.objects.none()
     return render(request, 'ver_pedidos.html', {'pedidos': pedidos})
 
 def test_base(request):
