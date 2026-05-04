@@ -17,7 +17,7 @@ def buscar_comida(request):
             # FLUJO ALTERNATIVO: Si no hay resultados, manda un mensaje[cite: 2]
             # if not resultados_restaurantes and not resultados_platillos:
             #     messages.warning(request, f"No se encontraron resultados para '{texto_busqueda}'.")
-            pass # Quita este 'pass' cuando descomentes lo de arriba
+            pass 
             
         except Exception as e:
             # FLUJO EXCEPCIONAL: Falla de conexión con la BD
