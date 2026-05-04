@@ -1,0 +1,118 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #0d0d0d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.registro-container {
+    background: #161616;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 40px;
+    width: 380px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.registro-titulo {
+    font-size: 26px;
+    font-weight: 800;
+    text-align: center;
+    color: #f0ece4;
+    margin-bottom: 8px;
+}
+
+.registro-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff5c1a;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.registro-btn:hover {
+    background-color: #e8501a;
+}
+
+.registro-btn-cancelar {
+    background-color: #1f1f1f;
+    border: 1px solid rgba(255,255,255,0.07);
+    color: #f0ece4;
+    margin-top: 8px;
+}
+
+.registro-btn-cancelar:hover {
+    background-color: #2a2a2a;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6b6761;
+}
+
+input {
+    background: #1f1f1f;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 11px 14px;
+    color: #f0ece4;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input:focus {
+    border-color: #ff5c1a;
+    box-shadow: 0 0 0 3px rgba(255,92,26,0.12);
+}
+
+.registro-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.alerta-exito {
+    background: rgba(46,204,113,0.1);
+    border: 1px solid rgba(46,204,113,0.25);
+    color: #2ecc71;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.alerta-error {
+    background: rgba(231,76,60,0.1);
+    border: 1px solid rgba(231,76,60,0.25);
+    color: #e74c3c;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 14px;
+}

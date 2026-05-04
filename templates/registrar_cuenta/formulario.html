@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Cuenta</title>
+    <link rel="stylesheet" href="/static/css/registro.css">
+</head>
+<body>
+    <div class="registro-container">
+        <h1 class="registro-titulo">Crear cuenta</h1>
+
+        {% if exito %}
+        <div class="alerta-exito">
+            <p>¡Felicidades, tu cuenta ha sido registrada exitosamente!</p>
+            <a href="{% url 'seleccionar_tipo' %}">
+                <button class="registro-btn">Aceptar</button>
+            </a>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="alerta-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" class="registro-form">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Nombre de Usuario</label>
+                <input type="text" name="nombre_usuario" placeholder="Nombre de usuario">
+            </div>
+
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" name="contrasena" placeholder="••••••••">
+            </div>
+
+            <div class="form-group">
+                <label>Confirmar contraseña</label>
+                <input type="password" name="confirmar_contrasena" placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="registro-btn">Aceptar</button>
+            <a href="{% url 'seleccionar_tipo' %}">
+                <button type="button" class="registro-btn registro-btn-cancelar">Regresar/Cancelar</button>
+            </a>
+        </form>
+    </div>
+</body>
+</html>

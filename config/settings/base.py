@@ -20,6 +20,7 @@ DJANGO_APPS = [
 
 LOCAL_APPS = [
     'core',
+    'registrar_cuenta',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
