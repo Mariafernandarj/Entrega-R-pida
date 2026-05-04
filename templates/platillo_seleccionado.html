@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="padding: 20px; border: 1px solid #ccc; max-width: 400px; margin: auto;">
+    <h2>{{ nombre_platillo }}</h2>
+    <p>Precio: ${{ precio }}</p>
+    <p>Descripción: Deliciosa hamburguesa con queso y papas.</p>
+    
+    <!-- Boton que lleva a agregar_carrito -->
+    <a href="{% url 'agregar_carrito' %}" style="padding: 10px; background: green; color: white; text-decoration: none;">Agregar al carrito</a>
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="padding: 20px; max-width: 400px; margin: auto;">
+    <h2>Pago por Transferencia</h2>
+    <p>Por favor, transfiere el monto exacto a la siguiente CLABE interbancaria:</p>
+    <h3 style="background: #000000ff; padding: 10px; text-align: center;">012 345 67890 123456 7</h3>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" style="padding: 10px; background: green; color: white; border: none; cursor: pointer; width: 100%;">Ya realicé la transferencia</button>
+    </form>
+    <br>
+    <a href="{% url 'pago_producto' %}">Cancelar y regresar</a>
+</div>
+{% endblock %}

@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'core',
     'inicio_sesion',
     'busqueda_restaurante_comida', #nombre carpeta
+    'hacer_compra' #nombre de la carpeta
 ]
 
 MIDDLEWARE = [

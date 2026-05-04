@@ -6,4 +6,5 @@ urlpatterns = [
     path('', include('core.urls')),
     path('inicioSesion/', include('inicio_sesion.urls')),
     path('busqueda/', include('busqueda_restaurante_comida.urls')),
+    path('compra/', include('hacer_compra.urls')),
 ] #apunta a la carpeta

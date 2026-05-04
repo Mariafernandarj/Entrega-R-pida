@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="padding: 20px; max-width: 400px; margin: auto;">
+    <h2>Pago con Tarjeta</h2>
+    
+    <!--  POST simula que se procesa la compra -->
+    <form method="POST">
+        {% csrf_token %}
+        <label>Número de Tarjeta:</label><br>
+        <input type="text" placeholder="0000 0000 0000 0000" style="margin-bottom: 10px; width: 100%;"><br>
+        
+        <label>CVV:</label><br>
+        <input type="text" placeholder="123" style="margin-bottom: 20px;"><br>
+        
+        <button type="submit" style="padding: 10px; background: green; color: white; border: none; cursor: pointer;">Procesar Compra</button>
+    </form>
+    <br>
+    <a href="{% url 'pago_producto' %}">Cancelar y regresar</a>
+</div>
+{% endblock %}
