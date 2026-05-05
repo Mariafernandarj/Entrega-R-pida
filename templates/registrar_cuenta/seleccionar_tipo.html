@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    <link rel="stylesheet" href="/static/css/registro.css">
+</head>
+<body>
+    <div class="registro-container">
+        <h1 class="registro-titulo">Soy un</h1>
+
+        <a href="{% url 'formulario_registro' 'cliente' %}">
+            <button class="registro-btn">Cliente</button>
+        </a>
+        <a href="{% url 'formulario_registro' 'restaurante' %}">
+            <button class="registro-btn">Restaurante</button>
+        </a>
+        <a href="{% url 'formulario_registro' 'repartidor' %}">
+            <button class="registro-btn">Repartidor</button>
+        </a>
+    </div>
+</body>
+</html>

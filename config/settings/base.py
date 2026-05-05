@@ -19,6 +19,7 @@ DJANGO_APPS = [
 ]
 
 LOCAL_APPS = [
+    'registrar_cuenta',
     'solicitudes_reparto',
 ]
 
