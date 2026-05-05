@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="padding: 20px; max-width: 500px; margin: auto; border: 1px solid #ccc;">
+    <h2>Perfil de mi Comercio</h2>
+    
+    <!-- mensajes de éxito cuando termine de editar -->
+    {% if messages %}
+        {% for message in messages %}
+            <div style="background-color: #d4edda; color: #155724; padding: 10px; margin-bottom: 15px; border: 1px solid #c3e6cb;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <p><strong>Nombre:</strong> {{ nombre_restaurante }}</p>
+    <p><strong>Dirección:</strong> {{ direccion }}</p>
+    <p><strong>Teléfono:</strong> {{ telefono }}</p>
+    
+    <!-- Boton de "editar"-->
+    <a href="{% url 'editar_comercio' %}" style="padding: 10px; background: blue; color: white; text-decoration: none; display: inline-block; margin-top: 10px;">Editar Perfil</a>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="padding: 20px; max-width: 500px; margin: auto;">
+    <h2>Tu Carrito de Compras</h2>
+    <ul>
+        <li>Hamburguesa Sencilla - $120.00</li>
+    </ul>
+    <h3>Total: $120.00</h3>
+    
+    <a href="{% url 'buscar_comida' %}" style="padding: 10px; background: gray; color: white; text-decoration: none;">Seguir buscando</a>
+    <!-- Boton que lleva a seleccionar método de pago -->
+    <a href="{% url 'pago_producto' %}" style="padding: 10px; background: blue; color: white; text-decoration: none;">Ir a Pagar</a>
+</div>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Restaurante - RepártoYa{% endblock %}
+
+{% block content %}
+<div class="page-content">
+    <div style="display: flex; gap: 40px;">
+        <!-- Columna Izquierda (Foto y Datos del Restaurante) -->
+        <div class="card" style="flex: 1; max-width: 300px; text-align: center;">
+            <div style="background: #333; height: 200px; border-radius: 8px; margin-bottom: 20px;"></div>
+            <h2>Nombre del Restaurante</h2>
+            <p style="color: var(--text-muted);">Dirección del local</p>
+        </div>
+
+        <!-- Columna Derecha (Menú) -->
+        <div style="flex: 2;">
+            <h3 style="margin-bottom: 20px;">Menús</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="card">
+                    <h4>Platillo 1</h4>
+                    <p style="font-size: 12px; color: var(--text-muted);">Detalles</p>
+                </div>
+                <div class="card">
+                    <h4>Platillo 2</h4>
+                    <p style="font-size: 12px; color: var(--text-muted);">Detalles</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

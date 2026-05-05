@@ -23,7 +23,19 @@ LOCAL_APPS = [
     'solicitudes_reparto',
 ]
 
-INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
+INSTALLED_APPS = [
+    'django.contrib.admin',          
+    'django.contrib.auth',          
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'core',
+    'inicio_sesion', #nombre carpeta
+    'busqueda_restaurante_comida', #nombre carpeta
+    'hacer_compra', #nombre de la carpeta
+    'editar_perfil_comercio', #nombre de la carpeta
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -40,7 +52,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
