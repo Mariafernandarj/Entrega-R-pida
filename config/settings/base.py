@@ -19,8 +19,8 @@ DJANGO_APPS = [
 ]
 
 LOCAL_APPS = [
-    'registrar_cuenta',
-    'solicitudes_reparto',
+    #'registrar_cuenta',
+    #'solicitudes_reparto',
 ]
 
 INSTALLED_APPS = [
@@ -30,11 +30,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
     'inicio_sesion', #nombre carpeta
     'busqueda_restaurante_comida', #nombre carpeta
     'hacer_compra', #nombre de la carpeta
     'editar_perfil_comercio', #nombre de la carpeta
+    'registrar_cuenta',
+    'solicitudes_reparto',
 ]
 
 MIDDLEWARE = [
