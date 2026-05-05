@@ -9,3 +9,6 @@ urlpatterns = [
     path('compra/', include('hacer_compra.urls')),
     path('comercio/', include('editar_perfil_comercio.urls')),
 ] #apunta a la carpeta
+    path('', include('registrar_cuenta.urls')),
+    path('', include('solicitudes_reparto.urls')),
+]

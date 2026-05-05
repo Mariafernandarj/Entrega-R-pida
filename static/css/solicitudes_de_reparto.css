@@ -1,0 +1,268 @@
+/* 
+   solicitudes_de_reparto.css
+   Depende de las CSS variables de base.html
+
+/* Encabezado de página */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-header h2 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.page-header h2::before {
+  content: '';
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--accent);
+}
+
+/* Contador de pedidos*/
+.pedidos-count {
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 5px 14px;
+  border-radius: 20px;
+}
+
+.pedidos-count span {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/*Tabla wrapper*/
+.table-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/*  Tabla*/
+.solicitudes-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.solicitudes-table thead {
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border);
+}
+
+.solicitudes-table thead th {
+  padding: 14px 20px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.solicitudes-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+
+.solicitudes-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.solicitudes-table tbody tr:hover {
+  background: rgba(255, 92, 26, 0.04);
+}
+
+.solicitudes-table tbody td {
+  padding: 16px 20px;
+  vertical-align: middle;
+}
+
+/*Celda: ID de pedido*/
+.pedido-id {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.pedido-id-prefix {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 13px;
+}
+
+/*  Celda: Restaurante */
+.restaurante-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.restaurante-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.restaurante-nombre {
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Celda: Tiempo límite */
+.tiempo-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tiempo-fecha {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.tiempo-countdown {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.tiempo-ok      { color: var(--success); }
+.tiempo-warning { color: var(--warning); }
+.tiempo-urgent  { color: var(--danger);  animation: blink 1s ease-in-out infinite; }
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+/* Celda: Acción */
+.accion-form {
+  display: inline-flex;
+}
+
+.btn-aceptar {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(255, 92, 26, 0.28);
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.btn-aceptar svg {
+  width: 15px;
+  height: 15px;
+  transition: transform var(--transition);
+}
+
+.btn-aceptar:hover {
+  background: #e8501a;
+  box-shadow: 0 6px 20px rgba(255, 92, 26, 0.42);
+  transform: translateY(-1px);
+}
+
+.btn-aceptar:hover svg {
+  transform: translateX(2px);
+}
+
+.btn-aceptar:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 92, 26, 0.3);
+}
+
+/* ── Empty state ── */
+.empty-solicitudes {
+  text-align: center;
+  padding: 72px 20px;
+}
+
+.empty-solicitudes-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.empty-solicitudes h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.empty-solicitudes p {
+  font-size: 14px;
+  color: var(--text-muted);
+  max-width: 300px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/*  Responsive */
+@media (max-width: 768px) {
+  .solicitudes-table thead th:nth-child(3) ,
+  .solicitudes-table tbody td:nth-child(3) {
+    display: none; /* Oculta "Tiempo límite" en móvil */
+  }
+
+  .solicitudes-table thead th,
+  .solicitudes-table tbody td {
+    padding: 12px 14px;
+  }
+
+  .btn-aceptar {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .page-header h2 {
+    font-size: 20px;
+  }
+}

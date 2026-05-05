@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Solicitudes de Reparto {% endblock %}
+{% block page_title %}Solicitude de Reparto {% endblock %}
+{% block nav_solicitudes %}activate{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/solicitudes_de_reparto.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Encabezado -->
+<div class="page-header">
+  <h2>Solicitudes de Reparto</h2>
+  {% if pedidos %}
+  <span class="pedidos-count">
+    <span>{{ pedidos|length }}</span> pedido{{ pedidos|length|pluralize }} disponible{{ pedidos|length|pluralize }}
+  </span>
+  {% endif %}
+</div>
+
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }}">{{ message }}</div>
+{% endfor %}
+
+{% if pedidos %}
+<div class="table-card">
+  <table class="solicitudes-table">
+    <thead>
+      <tr>
+        <th>Pedido</th>
+        <th>Restaurante</th>
+        <th>Tiempo límite</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for pedido in pedidos %}
+      <tr>
+	
+        <!-- ID -->
+        <td>
+          <span class="pedido-id">
+            <span class="pedido-id-prefix">#</span>{{ pedido.id }}
+          </span>
+        </td>
+	
+        <!-- Restaurante -->
+        <td>
+          <div class="restaurante-cell">
+            <div class="restaurante-avatar">
+              {{ pedido.restaurante.nombre|upper }}
+            </div>
+            <span class="restaurante-nombre">{{ pedido.restaurante }}</span>
+          </div>
+        </td>
+	s
+        <!-- Tiempo límite -->
+        <td>
+          <div class="tiempo-cell">
+            <span class="tiempo-fecha">{{ pedido.fecha_limite|date:"d/m/Y H:i" }}</span>
+            <span class="tiempo-countdown tiempo-ok" data-limite="{{ pedido.fecha_limite|date:'c' }}">
+              Calculando...
+            </span>
+          </div>
+        </td>
+	
+        <!-- Accion -->
+        <td>
+          <form class="accion-form" method="POST" action="{% url 'aceptar_solicitud' pedido.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-aceptar"
+                    onclick="return confirm('¿Aceptar el pedido #{{ pedido.id }}?')">
+              Aceptar
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </form>
+        </td>
+	
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+
+<!-- Estado vacío -->
+<div class="table-card">
+  <div class="empty-solicitudes">
+    <div class="empty-solicitudes-icon">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M9 17H5a2 2 0 00-2 2v2h14v-2a2 2 0 00-2-2h-4z"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+    </div>
+    <h3>Sin pedidos disponibles</h3>
+    <p>No hay solicitudes de reparto en este momento. Vuelve a revisar en unos minutos.</p>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  
+  function actualizarCountdowns() {
+      document.querySelectorAll('.tiempo-countdown').forEach(el => {
+	  const limite = new Date(el.dataset.limite);
+	  const ahora  = new Date();
+	  const diff   = Math.floor((limite - ahora) / 1000); // segundos restantes
+	  
+	  if (diff <= 0) {
+              el.textContent = 'Expirado';
+              el.className = 'tiempo-countdown tiempo-urgent';
+              return;
+	  }
+	  
+	  const mins = Math.floor(diff / 60);
+	  const segs = diff % 60;
+	  
+	  if (diff < 60)        el.className = 'tiempo-countdown tiempo-urgent';
+	  else if (diff < 300)  el.className = 'tiempo-countdown tiempo-warning';
+	  else                  el.className = 'tiempo-countdown tiempo-ok';
+	  
+	  el.textContent = mins > 0
+              ? `${mins}m ${segs}s restantes`
+              : `${segs}s restantes`;
+      });
+  }
+  
+  actualizarCountdowns();
+  setInterval(actualizarCountdowns, 1000);
+</script>
+
+{% endblock %}
