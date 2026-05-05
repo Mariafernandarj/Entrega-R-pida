@@ -19,7 +19,7 @@ DJANGO_APPS = [
 ]
 
 LOCAL_APPS = [
-    'core',
+    #'core',
 ]
 
 INSTALLED_APPS = [
