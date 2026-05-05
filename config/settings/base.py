@@ -30,9 +30,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'inicio_sesion',
+    'inicio_sesion', #nombre carpeta
     'busqueda_restaurante_comida', #nombre carpeta
-    'hacer_compra' #nombre de la carpeta
+    'hacer_compra', #nombre de la carpeta
+    'editar_perfil_comercio', #nombre de la carpeta
 ]
 
 MIDDLEWARE = [
