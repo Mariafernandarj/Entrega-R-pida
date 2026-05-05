@@ -19,7 +19,7 @@ DJANGO_APPS = [
 ]
 
 LOCAL_APPS = [
-    'core',
+    'solicitudes_reparto',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS
