@@ -1,0 +1,239 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #0d0d0d;
+    color: #f0ece4;
+    min-height: 100vh;
+}
+
+/* Topbar */
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background: #161616;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.logo {
+    font-size: 28px;
+}
+
+.busqueda input {
+    background: #1f1f1f;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 10px 16px;
+    color: #f0ece4;
+    font-size: 14px;
+    width: 300px;
+    outline: none;
+}
+
+.busqueda input:focus {
+    border-color: #ff5c1a;
+}
+
+.topbar-icons {
+    display: flex;
+    gap: 16px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* Contenido */
+.contenido {
+    padding: 32px;
+}
+
+.seccion-titulo {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #f0ece4;
+}
+
+.lista-horizontal {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+/* Tarjetas */
+.tarjeta-restaurante,
+.tarjeta-platillo {
+    background: #161616;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 12px;
+    width: 160px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.tarjeta-restaurante:hover,
+.tarjeta-platillo:hover {
+    background: #1f1f1f;
+}
+
+.tarjeta-platillo.agotado {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tarjeta-restaurante img,
+.tarjeta-platillo img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+.img-placeholder {
+    width: 100%;
+    height: 100px;
+    background: #1f1f1f;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.img-placeholder.grande {
+    height: 180px;
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.nombre {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f0ece4;
+}
+
+.detalle {
+    font-size: 12px;
+    color: #6b6761;
+    margin-top: 4px;
+}
+
+.badge-agotado {
+    display: block;
+    font-size: 10px;
+    color: #e74c3c;
+    margin-top: 6px;
+}
+
+/* Vacío */
+.vacio {
+    text-align: center;
+    padding: 60px;
+    color: #6b6761;
+}
+
+/* Popup */
+.popup-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup {
+    background: #161616;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 32px;
+    width: 360px;
+    position: relative;
+}
+
+.popup-cerrar {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: #f0ece4;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.popup img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.popup h2 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.popup p {
+    font-size: 14px;
+    color: #6b6761;
+    margin-bottom: 8px;
+}
+
+.precio {
+    font-size: 18px !important;
+    font-weight: 700;
+    color: #ff5c1a !important;
+}
+
+.popup-botones {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.btn-adquirir {
+    flex: 1;
+    padding: 12px;
+    background: #ff5c1a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-adquirir:hover {
+    background: #e8501a;
+}
+
+.btn-agregar {
+    flex: 1;
+    padding: 12px;
+    background: #1f1f1f;
+    color: #f0ece4;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-agregar:hover {
+    background: #2a2a2a;
+}

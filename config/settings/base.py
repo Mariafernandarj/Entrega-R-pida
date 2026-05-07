@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'editar_perfil_comercio', #nombre de la carpeta
     'registrar_cuenta',
     'solicitudes_reparto',
+    'navegar_menus',
 ]
 
 MIDDLEWARE = [
