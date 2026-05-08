@@ -13,7 +13,13 @@
             <input type="text" placeholder="Busca comida o restaurantes">
         </div>
         <div class="topbar-icons">
-            <span>👤</span>
+            <div class="user-menu-wrapper">
+                <span id="userIcon" onclick="toggleMenu()" style="cursor:pointer;">👤</span>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#">Editar Datos</a>
+                    <a href="#" class="cerrar-sesion">Cerrar Sesión</a>
+                </div>
+            </div>
             <span>🛒</span>
         </div>
     </div>
@@ -104,6 +110,18 @@
         function cerrarDetalle() {
             document.getElementById('popupOverlay').style.display = 'none';
         }
+
+        function toggleMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.user-menu-wrapper');
+            if (!wrapper.contains(e.target)) {
+                document.getElementById('userDropdown').style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>

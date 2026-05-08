@@ -237,3 +237,37 @@ body {
 .btn-agregar:hover {
     background: #2a2a2a;
 }
+
+.user-menu-wrapper {
+    position: relative;
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    background: #1f1f1f;
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 8px 0;
+    min-width: 160px;
+    z-index: 200;
+}
+
+.user-dropdown a {
+    display: block;
+    padding: 10px 20px;
+    font-size: 14px;
+    color: #f0ece4;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.user-dropdown a:hover {
+    background: #2a2a2a;
+}
+
+.user-dropdown a.cerrar-sesion {
+    color: #e74c3c;
+}
