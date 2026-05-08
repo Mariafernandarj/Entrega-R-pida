@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Principal</title>
+    <link rel="stylesheet" href="/static/css/navegar_menus.css">
+</head>
+<body>
+    <div class="topbar">
+        <div class="logo">😊</div>
+        <div class="busqueda">
+            <input type="text" placeholder="Busca comida o restaurantes">
+        </div>
+        <div class="topbar-icons">
+            <div class="user-menu-wrapper">
+                <span id="userIcon" onclick="toggleMenu()" style="cursor:pointer;">👤</span>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#">Editar Datos</a>
+                    <a href="#" class="cerrar-sesion">Cerrar Sesión</a>
+                </div>
+            </div>
+            <span>🛒</span>
+        </div>
+    </div>
+
+    <div class="contenido">
+        {% if restaurantes %}
+        <h2 class="seccion-titulo">Restaurantes Recomendados</h2>
+        <div class="lista-horizontal">
+            {% for restaurante in restaurantes %}
+            <div class="tarjeta-restaurante">
+                {% if restaurante.imagen %}
+                    <img src="{{ restaurante.imagen.url }}" alt="{{ restaurante.nombre }}">
+                {% else %}
+                    <div class="img-placeholder">🍽️</div>
+                {% endif %}
+                <p class="nombre">{{ restaurante.nombre }}</p>
+                <p class="detalle">{{ restaurante.direccion }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if platillos %}
+        <h2 class="seccion-titulo">Platillos Recomendados</h2>
+        <div class="lista-horizontal">
+            {% for platillo in platillos %}
+            <div class="tarjeta-platillo {% if platillo.agotado %}agotado{% endif %}"
+                 onclick="{% if not platillo.agotado %}abrirDetalle('{{ platillo.id }}', '{{ platillo.nombre }}', '{{ platillo.descripcion }}', '{{ platillo.precio }}', '{% if platillo.imagen %}{{ platillo.imagen.url }}{% endif %}'){% endif %}">
+                {% if platillo.imagen %}
+                    <img src="{{ platillo.imagen.url }}" alt="{{ platillo.nombre }}">
+                {% else %}
+                    <div class="img-placeholder">🍽️</div>
+                {% endif %}
+                <p class="nombre">{{ platillo.nombre }}</p>
+                <p class="detalle">${{ platillo.precio }}</p>
+                {% if platillo.agotado %}
+                    <span class="badge-agotado">Temporalmente fuera de servicio</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if not restaurantes and not platillos %}
+        <div class="vacio">
+            <p>No hay restaurantes ni platillos disponibles aún.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Popup detalle platillo -->
+    <div class="popup-overlay" id="popupOverlay" onclick="cerrarDetalle()">
+        <div class="popup" onclick="event.stopPropagation()">
+            <button class="popup-cerrar" onclick="cerrarDetalle()">✕</button>
+            <img id="popupImagen" src="" alt="" style="display:none;">
+            <div id="popupImgPlaceholder" class="img-placeholder grande">🍽️</div>
+            <h2 id="popupNombre"></h2>
+            <p id="popupDescripcion"></p>
+            <p id="popupPrecio" class="precio"></p>
+            <div class="popup-botones">
+                <button class="btn-adquirir">¡Adquirir ahora!</button>
+                <button class="btn-agregar">Agregar al 🛒</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirDetalle(id, nombre, descripcion, precio, imagen) {
+            document.getElementById('popupNombre').textContent = nombre;
+            document.getElementById('popupDescripcion').textContent = descripcion;
+            document.getElementById('popupPrecio').textContent = '$' + precio;
+            
+            const img = document.getElementById('popupImagen');
+            const placeholder = document.getElementById('popupImgPlaceholder');
+            
+            if (imagen) {
+                img.src = imagen;
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                img.style.display = 'none';
+                placeholder.style.display = 'flex';
+            }
+            
+            document.getElementById('popupOverlay').style.display = 'flex';
+        }
+
+        function cerrarDetalle() {
+            document.getElementById('popupOverlay').style.display = 'none';
+        }
+
+        function toggleMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        document.addEventListener('click', function(e) {
+            const wrapper = document.querySelector('.user-menu-wrapper');
+            if (!wrapper.contains(e.target)) {
+                document.getElementById('userDropdown').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

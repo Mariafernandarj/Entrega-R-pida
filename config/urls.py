@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -11,4 +13,5 @@ urlpatterns = [
     #apunta a la carpeta
     path('', include('registrar_cuenta.urls')),
     path('', include('solicitudes_reparto.urls')),
-]
+    path('', include('navegar_menus.urls')),
+]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

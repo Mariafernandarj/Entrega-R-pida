@@ -116,3 +116,11 @@ input:focus {
     border-radius: 12px;
     font-size: 14px;
 }
+.regresar-btn {
+    background-color: #6c757d; /* gris elegante */
+    color: white;
+}
+
+.regresar-btn:hover {
+    background-color: #5a6268;
+}
