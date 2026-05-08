@@ -13,11 +13,14 @@ REPARTIDOR_PRUEBA_ID = 2
 def solicitudes_de_reparto(request):
     """Página principal: lista de pedidos disponibles para repartir """
     #Elimina pedidos expirados
-    Pedido.objects.filter(
+    pedidos_expirados = Pedido.objects.filter(
         estado='pendiente',
         fecha_limite__lt = timezone.now()
-    ).update(estado = 'expirado')
-
+    )
+    
+    for pedido in pedidos_expirados:
+        pedido.reasignar()
+        
     pedidos_disponibles = Pedido.objects.filter(estado='pendiente')
     return render(request, 'solicitudes_de_reparto.html', { 'pedidos': pedidos_disponibles })
     
