@@ -1,21 +1,25 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from solicitudes_reparto.models import Restaurante
 
 def ver_perfil(request):
     # se cargan los datos reales de la BD
+    restaurante_actual = Restaurante.objects.first()
     contexto = {
-        'nombre_restaurante': request.session.get('nombre_restaurante', 'Mi Gran Restaurante'),
-        'direccion': request.session.get('direccion', 'Av. Principal 123'),
-        'telefono': request.session.get('telefono', '555-1234')
+        'restaurante': restaurante_actual
     }
     return render(request, 'perfil_comercio.html', contexto)
 
 def editar_perfil(request):
+    #de muestra el restaurante a ser editado
+    restaurante_actual = Restaurante.objects.first()
     if request.method == 'POST':
         # loq ue el usuario escribe en e formulario
         nuevo_nombre = request.POST.get('nombre')
         nueva_direccion = request.POST.get('direccion')
         nuevo_telefono = request.POST.get('telefono')
+        nueva_contrasena = request.POST.get('contrasena')
+
 
         # FLUJO EXCEPCIONAL 2: falla del servidor
         if nuevo_nombre == 'Falla': 
@@ -23,16 +27,26 @@ def editar_perfil(request):
             return render(request, 'editar_comercio.html')
             
         # FLUJO EXCEPCIONAL 1: los datos ya existen
-        if nuevo_nombre == 'Mi Gran Restaurante':
+        if nuevo_nombre == restaurante_actual.nombre:
+            messages.warning(request, "Datos ya existentes, por favor ingresa unos datos nuevos.")
+            return render(request, 'editar_comercio.html')
+        if nueva_contrasena == restaurante_actual.contrasena:
             messages.warning(request, "Datos ya existentes, por favor ingresa unos datos nuevos.")
             return render(request, 'editar_comercio.html')
             
         # FLUJO NORMAL: Se conecta, guarda datos en la base de datos temporal
-        request.session['nombre_restaurante'] = nuevo_nombre
-        request.session['direccion'] = nueva_direccion
-        request.session['telefono'] = nuevo_telefono
-        
+        if restaurante_actual:
+            restaurante_actual.nombre = nuevo_nombre
+            restaurante_actual.direccion = nueva_direccion
+            restaurante_actual.telefono = nuevo_telefono
+            restaurante_actual.contrasena = nueva_contrasena
+            restaurante_actual.save()
+            
         messages.success(request, "Tus datos han sido guardados exitosamente.")
         return redirect('perfil_comercio')
+    
+    contexto = {
+            'restaurante': restaurante_actual
+    }
 
-    return render(request, 'editar_comercio.html')
+    return render(request, 'editar_comercio.html', contexto)
