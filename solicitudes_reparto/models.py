@@ -38,6 +38,24 @@ class Pedido(models.Model):
     def __str__(self):
         return f"Pedido #{self.id} - {self.estado}"
 
+    #Método para reasignar pedido a otro repartido si expira
+    def reasignar(self):
+        """Busca otro repartidor y reasigna el pedido."""
+        from django.db.models import Count, Q
+
+        nuevo_repartidor = Repartidor.objects.exclude(
+            id=self.repartidor.id  # excluye al repartidor actual
+        ).annotate(
+            pedidos_activos=Count('pedido',filter=Q(pedido__estado='aceptado'))
+        ).order_by('pedidos_activos').first()
+
+        if nuevo_repartidor:
+            self.repartidor = nuevo_repartidor
+            self.estado = 'pendiente'  # vuelve a pendiente para que lo acepte
+            self.save()
+            return True
+        return False  # no hay repartidores disponibles
+        
     class Meta:
         ordering = ['-fecha_creacion']
 
