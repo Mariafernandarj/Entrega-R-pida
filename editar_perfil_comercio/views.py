@@ -1,18 +1,21 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from solicitudes_reparto.models import Restaurante
+from django.contrib.auth import update_session_auth_hash #para que Django no cierre sesion al cambiar la contraseña
 
 def ver_perfil(request):
     # se cargan los datos reales de la BD
-    restaurante_actual = Restaurante.objects.first()
+    #se busca al restaurante que se llame igual al nombre de ususario que haya iniciado sesion
+    restaurante_actual, creado = Restaurante.objects.get_or_create(nombre=request.user.username)
     contexto = {
         'restaurante': restaurante_actual
     }
     return render(request, 'perfil_comercio.html', contexto)
 
 def editar_perfil(request):
-    #de muestra el restaurante a ser editado
-    restaurante_actual = Restaurante.objects.first()
+    #muestra el restaurante a ser editado
+    #muestra los datos especificos del uduario que tenga la sesion abierta
+    restaurante_actual, creado = Restaurante.objects.get_or_create(nombre=request.user.username)
     
     if request.method == 'POST':
         # loq ue el usuario escribe en e formulario
@@ -55,6 +58,16 @@ def editar_perfil(request):
             restaurante_actual.telefono = nuevo_telefono
             restaurante_actual.contrasena = nueva_contrasena
             restaurante_actual.save()
+
+        #se actualiza la tabla general de usuarios, si se csmbis nombre o contraseña en editar perfilm entonces se actualiza para iniciar sesion
+        user = request.user
+        user.username = nuevo_nombre
+        if nueva_contrasena: # Si se escribe una contraseña nueva, se sincroniza
+            user.set_password(nueva_contrasena)
+        user.save()
+        
+        # se mantiene la sesion abierta
+        update_session_auth_hash(request, user)
             
         messages.success(request, "Tus datos han sido guardados exitosamente.")
         return redirect('perfil_comercio')
