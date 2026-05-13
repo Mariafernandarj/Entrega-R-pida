@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'registrar_cuenta',
     'solicitudes_reparto',
     'navegar_menus',
+    'principal_repartidor',
 ]
 
 MIDDLEWARE = [
