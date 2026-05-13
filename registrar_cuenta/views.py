@@ -34,6 +34,7 @@ def formulario_registro(request, tipo):
                 'error': 'Las contraseñas no coinciden.',
             })
 
+        #Modificar aquí, 1 crear usuario de django 2 crear nuestro propio usuario. Relacionar Usuario con User de django
         try:
             Usuario.objects.create(
                 nombre_usuario=nombre,
@@ -54,3 +55,4 @@ def formulario_registro(request, tipo):
     return render(request, 'registrar_cuenta/formulario.html', {'tipo': tipo})
 
 # Create your views here.
+ 
