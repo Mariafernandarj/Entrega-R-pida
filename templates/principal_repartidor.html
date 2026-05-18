@@ -412,7 +412,7 @@ x1{% extends 'base.html' %}
   <!-- Saludo -->
   <div class="home-greeting">
     <div class="label">Panel del repartidor</div>
-    <h1>¿Qué vas a hacer<br>hoy, Carlos?</h1>
+    <h1>¿Qué vas a hacer<br>hoy, {{request.user.username}}?</h1>
     <p>Revisa las solicitudes disponibles o consulta los pedidos que ya tienes asignados.</p>
   </div>
 
