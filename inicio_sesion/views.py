@@ -41,6 +41,8 @@ def iniciar_sesion(request):
             info_usuario = Usuario.objects.filter(nombre_usuario=nombre).first()
             if info_usuario and info_usuario.tipo_usuario == 'restaurante':
                 return redirect('perfil_comercio')
+            elif info_usuario.tipo_usuario == 'repartidor':
+                return redirect('principal_repartidor')
             else:
                 return redirect('buscar_comida') 
         else:

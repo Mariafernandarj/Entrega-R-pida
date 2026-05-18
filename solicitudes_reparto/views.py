@@ -57,19 +57,40 @@ def aceptar_solicitud(request, pedido_id):
     return redirect('solicitudes_de_reparto')
 
 
-def ver_pedidos(request):
+#def ver_pedidos(request):
     #"""Muestra los pedidos asignados al repartidor actual"""
-    """Muestra los pedidos asignados al repartidor de prueba."""
+    #try:
+        #repartidor = request.user.repartidor
+        #pedidos = Pedido.objects.filter(
+           # repartidor = repartidor,
+           # estado = 'aceptado'
+     #   )
+    #except Repartidor.DoesNotExist:
+        
+        #pedidos = Pedido.objects.none()
+        #messages.error(request, "Tu usuario no tiene perfil de repartidor.")
+    #return render(request, 'ver_pedidos.html', {'pedidos': pedidos})
+def ver_pedidos(request):
     try:
         repartidor = request.user.repartidor
-        pedidos = Pedido.objects.filter(
-            repartidor = repartidor,
-            estado = 'aceptado'
-        )
+
     except Repartidor.DoesNotExist:
-        pedidos = Pedido.objects.none()
-        messages.error(request, "Tu usuario no tiene perfil de repartidor.")
-    return render(request, 'ver_pedidos.html', {'pedidos': pedidos})
+
+        # CREAR AUTOMÁTICAMENTE EL PERFIL
+        repartidor = Repartidor.objects.create(
+            user=request.user,
+            nombre=request.user.username
+        )
+    pedidos = Pedido.objects.filter(
+        repartidor=repartidor,
+        estado='aceptado'
+    )
+
+    return render(
+        request,
+        'ver_pedidos.html',
+        {'pedidos': pedidos}
+    )
 
 def test_base(request):
     return render(request, "test_base.html")
