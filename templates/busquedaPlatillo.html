@@ -3,44 +3,124 @@
 {% block title %}Resultados de Búsqueda - RepártoYa{% endblock %}
 
 {% block content %}
-<div class="page-content">
+<style>
+    .user-menu-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+    .user-dropdown {
+        display: none;
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background-color: white;
+        min-width: 150px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1000;
+        border-radius: 4px;
+        padding: 5px 0;
+        margin-top: 10px;
+    }
+    .user-dropdown a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        font-size: 14px;
+    }
+    .user-dropdown a:hover {
+        background-color: #f1f1f1;
+    }
+    .cerrar-sesion {
+        color: #d9534f !important; /* Rojo para destacar */
+        border-top: 1px solid #ffffff;
+    }
+</style>
+
+<div class="topbar" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: #000000; border-bottom: 1px solid #222; margin-bottom: 30px;">
     
-    <!-- Barra de búsqueda -->
-    <div style="margin-bottom: 30px; text-align: center;">
-        <form method="GET" action="{% url 'buscar_comida' %}" style="display: inline-block; width: 100%; max-width: 600px;">
-            <input type="text" name="q" value="{{ texto_busqueda }}" placeholder="Busca comida o restaurantes" style="width: 80%; display: inline-block;">
-            <button type="submit" class="btn btn-primary" style="display: inline-block;">Buscar</button>
+    <div class="logo" style="font-size: 35px; color: #fff;">😊</div>
+    
+    <div class="busqueda" style="flex-grow: 1; max-width: 600px; margin: 0 20px;">
+        <form method="GET" action="{% url 'busqueda_platillo' %}" style="display: flex; width: 100%;">
+            <input type="text" name="q" value="{{ texto_busqueda }}" placeholder="Busca comida o restaurantes y presiona Enter" 
+                   style="background-color: #1c1c1c; color: #ffffff; border: 1px solid #444; width: 100%; padding: 10px 15px; border-radius: 4px; font-size: 16px; outline: none;">
         </form>
     </div>
-
-    <h2 class="card-title" style="text-align: center; margin-bottom: 20px;">Resultado para el Platillo buscado</h2>
-
-    <!-- Errores (Flujos Alternativo y Excepcional) -->
-    {% if messages %}
-        <div class="messages-container">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <!-- recuadros de resultados iterando la BD -->
-    <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
-        <div class="card" style="width: 250px; text-align: center;">
-            <div style="background: #333; height: 120px; border-radius: 8px; margin-bottom: 10px;">
+    
+    <div class="topbar-icons" style="font-size: 28px; display: flex; gap: 20px; color: #fff; align-items: center;">
+        
+        <div class="user-menu-wrapper">
+            <span id="userIcon" onclick="toggleMenu()" style="cursor:pointer;">👤</span>
+            <div class="user-dropdown" id="userDropdown">
+                <a href="#">Editar Datos</a> 
+                <a href="#" class="cerrar-sesion">Cerrar Sesión</a>
             </div>
-            <h4>Restaurante 1</h4>
-            <a href="{% url 'restaurante_seleccionado' 1 %}" class="btn btn-ghost" style="margin-top: 10px;">Ver</a>
         </div>
         
-        <div class="card" style="width: 250px; text-align: center;">
-            <div style="background: #333; height: 120px; border-radius: 8px; margin-bottom: 10px;"></div>
-            <h4>Platillo BUSCADO</h4>
-            <p style="font-size: 12px; color: var(--text-muted);">Detalles</p>
+        <span style="cursor:pointer;">🛒</span>
+    </div>
+</div>
+
+<div class="page-content" style="max-width: 1000px; margin: 0 auto; padding: 0 20px;">
+    
+    <h3 style="text-align: center; font-weight: normal; color: #555; margin-bottom: 50px;">
+        {% if texto_busqueda %} Resultados para: "{{ texto_busqueda }}" {% else %} Realiza una búsqueda {% endif %}
+    </h3>
+
+    <div style="display: flex; gap: 30px; justify-content: center; flex-wrap: wrap;">
+        
+        {% for item in resultados %}
+        
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 260px;">
+            
+            <div style="border: 1px solid #ddd; display: flex; align-items: center; border-radius: 4px; overflow: hidden; background: #fff;">
+                <div style="background: #ccc; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; font-size: 20px;">🍽️</div>
+                <div style="padding: 10px;">
+                    <h4 style="margin: 0; font-size: 15px; font-weight: bold; color: #000;">{{ item.restaurante.nombre }}</h4>
+                    {% if item.restaurante.id %}
+                        <a href="{% url 'restaurante_seleccionado' item.restaurante.id %}" style="font-size: 12px; color: #666; text-decoration: none;">Ver</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div style="border: 1px solid #ddd; display: flex; align-items: center; border-radius: 4px; overflow: hidden; background: #fff;">
+                <div style="background: #ccc; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; font-size: 20px;">🍽️</div>
+                <div style="padding: 10px;">
+                    <h4 style="margin: 0; font-size: 15px; font-weight: bold; color: #000;">{{ item.platillo.nombre }}</h4>
+                    <a href="#" style="font-size: 12px; color: #666; text-decoration: none;">Detalles</a>
+                </div>
+            </div>
+
         </div>
+        
+        {% empty %}
+        <div style="text-align: center; width: 100%; color: #888;">
+            <p>No encontramos platillos que coincidan con tu búsqueda.</p>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <div style="display: flex; justify-content: flex-end; margin-top: 60px; margin-bottom: 30px;">
+        <a href="javascript:history.back()" style="color: #8b5cf6; text-decoration: none; font-size: 16px;">Regresar</a>
     </div>
 
 </div>
+
+<script>
+    function toggleMenu() {
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Cierra el menú si se da clic en cualquier otro lado de la pantalla
+    document.addEventListener('click', function(e) {
+        const wrapper = document.querySelector('.user-menu-wrapper');
+        // se cierra si el click no fue dentro del menu
+        if (!wrapper.contains(e.target)) {
+            document.getElementById('userDropdown').style.display = 'none';
+        }
+    });
+</script>
 {% endblock %}
