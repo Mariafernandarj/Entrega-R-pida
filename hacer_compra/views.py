@@ -1,16 +1,51 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+#para que funcione la base de datos
+from navegar_menus.models import Platillo
+from registrar_cuenta.models import Usuario
+from solicitudes_reparto.models import Pedido, DetallePedido
 
 def platillo_seleccionado(request, id_platillo):
     # FLUJO NORMAL: consulta a la BD del platillo
     # platillo = Platillo.objects.get(id=id_platillo)
+    platillo_seleccionado = get_object_or_404(Platillo, id=id_platillo)
     
     contexto = {
-        'id_platillo': id_platillo,
-        'nombre_platillo': 'Hamburguesa Sencilla',
-        'precio': 120.00
+        'platillo': platillo_seleccionado,
     }
     return render(request, 'platillo_seleccionado.html', contexto)
+
+#para crear el pedido cuando se le da click en el boton
+def adquirir_ahora(request, id_platillo):
+    if request.method == 'POST':
+        platillo = get_object_or_404(Platillo, id=id_platillo)
+        
+        if request.user.is_authenticated:
+            # se identifica al cliente
+            cliente = Usuario.objects.get(nombre_usuario=request.user.username)
+            
+            #se crea el pedido (tiket) en la base de datos
+            nuevo_pedido = Pedido.objects.create(
+                cliente=cliente,
+                restaurante_id=platillo.restaurante.id,
+                estado='pendiente',
+                total=platillo.precio
+            )
+            
+            # se agregael platillo a ese ticket
+            DetallePedido.objects.create(
+                pedido=nuevo_pedido,
+                platillo=platillo,
+                cantidad=1,
+                subtotal=platillo.precio
+            )
+            
+            messages.success(request, f"¡Tu pedido de {platillo.nombre} ha sido creado con éxito!")
+            # cuando ya lo agrego a la base de datos entonces manda a las opciones de pago
+            return redirect('pago_producto')
+        
+        # Si se intenta entrar sin darle clic al boton, se regresa
+    return redirect('pagina_principal')
 
 def agregar_carrito(request):
     # logica del Controlador 'AgregarCarritoControlador'

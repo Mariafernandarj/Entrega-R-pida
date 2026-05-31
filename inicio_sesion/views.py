@@ -48,7 +48,7 @@ def iniciar_sesion(request):
             if info_usuario and info_usuario.tipo_usuario == 'restaurante':
                 return redirect('pagina_principal') #perfil_comercio
             else:
-                return redirect('buscar_comida') 
+                return redirect('pagina_principal') 
         else:
             # Flujo alternativo, mensaje de error
             messages.error(request, "Nombre de usuario o contraseña incorrectos. Por favor, vuelve a intentarlo.")
