@@ -3,13 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from .models import Pedido, Repartidor
+from registrar_cuenta.models import Usuario
 
 from django.shortcuts import render
 
 # Create your views here.
-
-# Repartidor hardcodeado :)
-REPARTIDOR_PRUEBA_ID = 2
 def solicitudes_de_reparto(request):
     """Página principal: lista de pedidos disponibles para repartir """
     #Elimina pedidos expirados
@@ -35,7 +33,7 @@ def aceptar_solicitud(request, pedido_id):
             return redirect('solicitudes_de_reparto')
         try:
             # HARDCODED para pruebas
-            repartidor = Repartidor.objects.get(id=REPARTIDOR_PRUEBA_ID)
+            repartidor = request.user.repartidor
             pedido.repartidor = repartidor
             pedido.estado = 'aceptado'
             pedido.save()
@@ -59,18 +57,40 @@ def aceptar_solicitud(request, pedido_id):
     return redirect('solicitudes_de_reparto')
 
 
-def ver_pedidos(request):
+#def ver_pedidos(request):
     #"""Muestra los pedidos asignados al repartidor actual"""
-    """Muestra los pedidos asignados al repartidor de prueba."""
+    #try:
+        #repartidor = request.user.repartidor
+        #pedidos = Pedido.objects.filter(
+           # repartidor = repartidor,
+           # estado = 'aceptado'
+     #   )
+    #except Repartidor.DoesNotExist:
+        
+        #pedidos = Pedido.objects.none()
+        #messages.error(request, "Tu usuario no tiene perfil de repartidor.")
+    #return render(request, 'ver_pedidos.html', {'pedidos': pedidos})
+def ver_pedidos(request):
     try:
-        repartidor = Repartidor.objects.get(id=REPARTIDOR_PRUEBA_ID)
-        pedidos = Pedido.objects.filter(
-            repartidor = repartidor,
-            estado = 'aceptado'
-        )
+        repartidor = request.user.repartidor
+
     except Repartidor.DoesNotExist:
-        pedidos = Pedido.objects.none()
-    return render(request, 'ver_pedidos.html', {'pedidos': pedidos})
+
+        # CREAR AUTOMÁTICAMENTE EL PERFIL
+        repartidor = Repartidor.objects.create(
+            user=request.user,
+            nombre=request.user.username
+        )
+    pedidos = Pedido.objects.filter(
+        repartidor=repartidor,
+        estado='aceptado'
+    )
+
+    return render(
+        request,
+        'ver_pedidos.html',
+        {'pedidos': pedidos}
+    )
 
 def test_base(request):
     return render(request, "test_base.html")
