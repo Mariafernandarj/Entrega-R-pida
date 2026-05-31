@@ -4,8 +4,14 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from registrar_cuenta.models import Usuario #models de registrar_cuenta para usarlo
 
-def iniciar_sesion(request):
-    if request.method == 'POST':
+def iniciar_sesion(request):       
+    # para que ya no genere errores al darle click atras y pueda volver a entrar sin tener que escribir congtraseñan de nuevo 
+    if request.user.is_authenticated:
+            return redirect('pagina_principal')  # Redirige a la página principal si ya está autenticado
+    if request.method == 'POST':        
+        if request.user.is_authenticated:
+            return redirect('pagina_principal') # Redirige a la página principal si ya está autenticado
+
         nombre = request.POST.get('nombre_usuario', '').strip()
         contrasena = request.POST.get('contrasena', '').strip()
         
@@ -40,14 +46,25 @@ def iniciar_sesion(request):
             # redirigir dependiendo del tipo de usuario, a pagina principal de cada caso
             info_usuario = Usuario.objects.filter(nombre_usuario=nombre).first()
             if info_usuario and info_usuario.tipo_usuario == 'restaurante':
-                return redirect('perfil_comercio')
-            elif info_usuario.tipo_usuario == 'repartidor':
-                return redirect('principal_repartidor')
+                return redirect('pagina_principal') #perfil_comercio
             else:
-                return redirect('buscar_comida') 
+                return redirect('pagina_principal') 
         else:
             # Flujo alternativo, mensaje de error
             messages.error(request, "Nombre de usuario o contraseña incorrectos. Por favor, vuelve a intentarlo.")
             return redirect('iniciar_sesion')
             
     return render(request, 'inicioSesion.html')
+
+
+def perfil_comercio(request):
+    if request.user.is_authenticated:
+        # Buscamos qué tipo de usuario es la cuenta que inició sesión
+        cuenta = Usuario.objects.filter(nombre_usuario=request.user.username).first()
+        
+        # Si es restaurante, lo mandamos a tu pantalla correcta de editar_perfil_comercio
+        if cuenta and cuenta.tipo_usuario == 'restaurante':
+            return redirect('perfil_comercio') 
+        
+    # Si es cliente o repartidor (o no está logueado), lo mandamos a la página principal
+    return redirect('pagina_principal')

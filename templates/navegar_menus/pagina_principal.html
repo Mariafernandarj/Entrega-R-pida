@@ -10,13 +10,15 @@
     <div class="topbar">
         <div class="logo">😊</div>
         <div class="busqueda">
-            <input type="text" placeholder="Busca comida o restaurantes">
+            <form method="GET" action="{% url 'busqueda_platillo' %}?q={{ platillo.nombre }}" style="width: 100%; display: flex;">
+                <input type="text" name="q" placeholder="Busca comida o restaurantes y presiona Enter">
+            </form>
         </div>
         <div class="topbar-icons">
             <div class="user-menu-wrapper">
                 <span id="userIcon" onclick="toggleMenu()" style="cursor:pointer;">👤</span>
                 <div class="user-dropdown" id="userDropdown">
-                    <a href="#">Editar Datos</a>
+                    <a href="{% url 'perfil_comercio' %}">Editar Datos</a>
                     <a href="#" class="cerrar-sesion">Cerrar Sesión</a>
                 </div>
             </div>
@@ -47,7 +49,7 @@
         <div class="lista-horizontal">
             {% for platillo in platillos %}
             <div class="tarjeta-platillo {% if platillo.agotado %}agotado{% endif %}"
-                 onclick="{% if not platillo.agotado %}abrirDetalle('{{ platillo.id }}', '{{ platillo.nombre }}', '{{ platillo.descripcion }}', '{{ platillo.precio }}', '{% if platillo.imagen %}{{ platillo.imagen.url }}{% endif %}'){% endif %}">
+     onclick="{% if not platillo.agotado %}window.location.href='{% url 'busqueda_platillo' %}?q={{ platillo.nombre }}'{% endif %}">
                 {% if platillo.imagen %}
                     <img src="{{ platillo.imagen.url }}" alt="{{ platillo.nombre }}">
                 {% else %}
@@ -88,6 +90,7 @@
 
     <script>
         function abrirDetalle(id, nombre, descripcion, precio, imagen) {
+            window.location.href = "{% url 'busqueda_platillo' %}?q=" + encodeURIComponent(nombre);
             document.getElementById('popupNombre').textContent = nombre;
             document.getElementById('popupDescripcion').textContent = descripcion;
             document.getElementById('popupPrecio').textContent = '$' + precio;

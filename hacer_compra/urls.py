@@ -8,4 +8,5 @@ urlpatterns = [
     path('pago/', views.pago_producto, name='pago_producto'),
     path('pago/tarjeta/', views.pago_tarjeta, name='pago_tarjeta'),
     path('pago/transferencia/', views.pago_transferencia, name='pago_transferencia'),
+    path('adquirir_ahora/<int:id_platillo>/', views.adquirir_ahora, name='adquirir_ahora'),
 ]
