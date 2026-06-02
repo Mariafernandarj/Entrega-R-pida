@@ -4,7 +4,7 @@ from .models import Pedido, Restaurante, Repartidor
 
 @admin.register(Pedido)
 class PedidoAdmin(admin.ModelAdmin):
-    list_display = ('id', 'estado', 'fecha_creacion', 'fecha_creacion')
+    list_display = ('id', 'estado', 'fecha_creacion', 'fecha_creacion', 'pagado')
     list_filter = ('estado',)
     search_fields = ('id',)
     # Solo permite editar el estado desde el admin

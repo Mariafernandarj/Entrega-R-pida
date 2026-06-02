@@ -32,6 +32,7 @@ class Pedido(models.Model):
     
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    pagado = models.BooleanField(default=False) #cambia a verdadero cuando se le da en aceptar desde pago tarjeta/transferencia
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     fecha_limite = models.DateTimeField(default=default_fecha_limite)
