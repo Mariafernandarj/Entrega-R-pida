@@ -52,7 +52,7 @@
         <h2 class="seccion-titulo">Restaurantes Recomendados</h2>
         <div class="lista-horizontal">
             {% for restaurante in restaurantes %}
-            <div class="tarjeta-restaurante">
+            <div class="tarjeta-restaurante" style="cursor: pointer;" onclick="window.location.href='{% url 'restaurante_seleccionado' restaurante.id %}'">
                 {% if restaurante.imagen %}
                     <img src="{{ restaurante.imagen.url }}" alt="{{ restaurante.nombre }}">
                 {% else %}

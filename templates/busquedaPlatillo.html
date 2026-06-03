@@ -68,6 +68,26 @@
         {% if texto_busqueda %} Resultados para: "{{ texto_busqueda }}" {% else %} Realiza una búsqueda {% endif %}
     </h3>
 
+    {% if restaurantes_encontrados %}
+            <h2 style="color: white; margin-bottom: 20px;">Restaurantes encontrados para "{{ texto_busqueda }}"</h2>
+            
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 40px;">
+                {% for restaurante in restaurantes_encontrados %}
+                    <div style="cursor: pointer; background-color: #1c1c1c; padding: 20px; border-radius: 12px; border: 1px solid #333; width: 250px; text-align: center; transition: 0.3s;" onmouseover="this.style.borderColor='#ff6600'" onmouseout="this.style.borderColor='#333'" onclick="window.location.href='{% url 'restaurante_seleccionado' restaurante.id %}'">
+                        
+                        {% if restaurante.imagen %}
+                            <img src="{{ restaurante.imagen.url }}" alt="{{ restaurante.nombre }}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 8px; margin-bottom: 10px;">
+                        {% else %}
+                            <div style="background-color: #333; height: 150px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; margin-bottom: 10px;">🍽️</div>
+                        {% endif %}
+                        
+                        <h3 style="margin: 0; color: white;">{{ restaurante.nombre }}</h3>
+                        <p style="color: #888; font-size: 14px; margin-top: 5px;">Restaurante</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
     <div style="display: flex; gap: 30px; justify-content: center; flex-wrap: wrap;">
         
         {% for item in resultados %}
