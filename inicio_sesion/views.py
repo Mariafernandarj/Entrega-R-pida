@@ -10,8 +10,11 @@ def iniciar_sesion(request):
     # Si ya está autenticado (ej. le dio "Atrás"), lo redirigimos a su panel correcto según su rol
     if request.user.is_authenticated:
         info_usuario = Usuario.objects.filter(nombre_usuario=request.user.username).first()
-        if info_usuario and info_usuario.tipo_usuario == 'repartidor':
-            return redirect('principal_repartidor')
+        if info_usuario:
+            if info_usuario.tipo_usuario == 'repartidor':
+                return redirect('principal_repartidor')
+            elif info_usuario.tipo_usuario == 'restaurante':
+                return redirect('principal_restaurante') # 👇 Protege al restaurante si da atrás
         return redirect('pagina_principal')  
 
     if request.method == 'POST':        
@@ -53,10 +56,10 @@ def iniciar_sesion(request):
                 print(f"DEBUG: Usuario identificado como tipo: {info_usuario.tipo_usuario}")
                 
                 if info_usuario.tipo_usuario == 'repartidor':
-                    return redirect('principal_repartidor')  # <- Cambia aquí para mandarlo a su panel
+                    return redirect('principal_repartidor')
                 
                 elif info_usuario.tipo_usuario == 'restaurante':
-                    return redirect('pagina_principal')  # O la de comercio si es tu caso
+                    return redirect('principal_restaurante')  # 👈 ¡AQUÍ REDIRIGE AL PANEL DEL RESTAURANTE!
                 
                 elif info_usuario.tipo_usuario == 'cliente':
                     return redirect('pagina_principal')
@@ -86,5 +89,5 @@ def perfil_comercio(request):
 
 # 👇 NUEVA VISTA PARA EL CIERRE DE SESIÓN 👇
 class CustomLogoutView(LogoutView):
-    # Cuando termine de destruir la sesión del repartidor/usuario, lo mandamos al login
+    # Cuando termine de destruir la sesión, lo mandamos al login
     next_page = 'iniciar_sesion'
