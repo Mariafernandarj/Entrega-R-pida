@@ -26,7 +26,7 @@ class Pedido(models.Model):
 
     # Relaciones con otros modelos
     cliente = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pedidos_cliente') #para pedido y detalle de pedido
-    restaurante = models.ForeignKey('Restaurante', on_delete=models.CASCADE)
+    restaurante = models.ForeignKey('navegar_menus.Restaurante', on_delete=models.CASCADE)
     repartidor = models.ForeignKey('Repartidor', null=True, blank=True, on_delete=models.SET_NULL)
 
     
@@ -64,11 +64,11 @@ class Pedido(models.Model):
     class Meta:
         ordering = ['-fecha_creacion']
 
-class Restaurante(models.Model):
-    nombre = models.CharField(max_length=100)
-    direccion = models.CharField(max_length=255, blank=True, null=True)
-    telefono = models.CharField(max_length=20, blank=True, null=True)
-    contrasena = models.CharField(max_length=20, blank=True, null=True)
+#class Restaurante(models.Model):
+ #   nombre = models.CharField(max_length=100)
+  #  direccion = models.CharField(max_length=255, blank=True, null=True)
+   # telefono = models.CharField(max_length=20, blank=True, null=True)
+    #contrasena = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
         return self.nombre
