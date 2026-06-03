@@ -3,15 +3,18 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.contrib.auth.models import User
 from registrar_cuenta.models import Usuario #models de registrar_cuenta para usarlo
+# 👇 IMPORTANTE: Añadimos la vista de logout de Django
+from django.contrib.auth.views import LogoutView
 
 def iniciar_sesion(request):       
-    # para que ya no genere errores al darle click atras y pueda volver a entrar sin tener que escribir congtraseñan de nuevo 
+    # Si ya está autenticado (ej. le dio "Atrás"), lo redirigimos a su panel correcto según su rol
     if request.user.is_authenticated:
-            return redirect('pagina_principal')  # Redirige a la página principal si ya está autenticado
-    if request.method == 'POST':        
-        if request.user.is_authenticated:
-            return redirect('pagina_principal') # Redirige a la página principal si ya está autenticado
+        info_usuario = Usuario.objects.filter(nombre_usuario=request.user.username).first()
+        if info_usuario and info_usuario.tipo_usuario == 'repartidor':
+            return redirect('principal_repartidor')
+        return redirect('pagina_principal')  
 
+    if request.method == 'POST':        
         nombre = request.POST.get('nombre_usuario', '').strip()
         contrasena = request.POST.get('contrasena', '').strip()
         
@@ -43,12 +46,23 @@ def iniciar_sesion(request):
         
         if user is not None:
             login(request, user)
-            # redirigir dependiendo del tipo de usuario, a pagina principal de cada caso
+            
+            # 👇 MODIFICACIÓN AQUÍ: Redirección inteligente por tipo de usuario 👇
             info_usuario = Usuario.objects.filter(nombre_usuario=nombre).first()
-            if info_usuario and info_usuario.tipo_usuario == 'restaurante':
-                return redirect('pagina_principal') #perfil_comercio
-            else:
-                return redirect('pagina_principal') 
+            if info_usuario:
+                print(f"DEBUG: Usuario identificado como tipo: {info_usuario.tipo_usuario}")
+                
+                if info_usuario.tipo_usuario == 'repartidor':
+                    return redirect('principal_repartidor')  # <- Cambia aquí para mandarlo a su panel
+                
+                elif info_usuario.tipo_usuario == 'restaurante':
+                    return redirect('pagina_principal')  # O la de comercio si es tu caso
+                
+                elif info_usuario.tipo_usuario == 'cliente':
+                    return redirect('pagina_principal')
+
+            # Por si acaso no tiene tipo registrado
+            return redirect('pagina_principal') 
         else:
             # Flujo alternativo, mensaje de error
             messages.error(request, "Nombre de usuario o contraseña incorrectos. Por favor, vuelve a intentarlo.")
@@ -68,3 +82,9 @@ def perfil_comercio(request):
         
     # Si es cliente o repartidor (o no está logueado), lo mandamos a la página principal
     return redirect('pagina_principal')
+
+
+# 👇 NUEVA VISTA PARA EL CIERRE DE SESIÓN 👇
+class CustomLogoutView(LogoutView):
+    # Cuando termine de destruir la sesión del repartidor/usuario, lo mandamos al login
+    next_page = 'iniciar_sesion'
