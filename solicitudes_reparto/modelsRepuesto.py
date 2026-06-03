@@ -3,9 +3,8 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
 from django.db.models import Count
-#para pedido y detallePedido
 from registrar_cuenta.models import Usuario
-from navegar_menus.models import Restaurante, Platillo
+# Create your models here.
 
 # Método que define el tiempo lmite de espera de cada pedido a 3 minutos
 def default_fecha_limite():
@@ -25,14 +24,11 @@ class Pedido(models.Model):
     ]
 
     # Relaciones con otros modelos
-    cliente = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pedidos_cliente') #para pedido y detalle de pedido
-    restaurante = models.ForeignKey('navegar_menus.Restaurante', on_delete=models.CASCADE)
+    restaurante = models.ForeignKey('Restaurante', on_delete=models.CASCADE)
     repartidor = models.ForeignKey('Repartidor', null=True, blank=True, on_delete=models.SET_NULL)
 
     
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
-    total = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
-    pagado = models.BooleanField(default=False) #cambia a verdadero cuando se le da en aceptar desde pago tarjeta/transferencia
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     
     fecha_limite = models.DateTimeField(default=default_fecha_limite)
@@ -65,17 +61,27 @@ class Pedido(models.Model):
     class Meta:
         ordering = ['-fecha_creacion']
 
-#class Restaurante(models.Model):
- #   nombre = models.CharField(max_length=100)
-  #  direccion = models.CharField(max_length=255, blank=True, null=True)
-   # telefono = models.CharField(max_length=20, blank=True, null=True)
-    #contrasena = models.CharField(max_length=20, blank=True, null=True)
+class Restaurante(models.Model):
+    usuario = models.OneToOneField(
+        Usuario,
+        on_delete=models.CASCADE
+    )
+    
+    nombre = models.CharField(max_length=100)
+    direccion = models.CharField(max_length=255, blank=True, null=True)
+    telefono = models.CharField(max_length=20, blank=True, null=True)
+    contrasena = models.CharField(max_length=20, blank=True, null=True)
+    imagen = models.ImageField(upload_to='restaurantes/', blank=True, null=True )
 
     def __str__(self):
         return self.nombre
     
 class Repartidor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    usuario = models.OneToOneField(
+        Usuario,
+        on_delete=models.CASCADE
+    )
+    #user = models.OneToOneField(User, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
 
     def __str__(self):
@@ -90,13 +96,3 @@ class Repartidor(models.Model):
                 filter=models.Q(pedido__estado__in=['aceptado', 'en camino'])
             )
         ).order_by('pedidos_activos').first()
-        
-#para hacer pedidos
-class DetallePedido(models.Model):
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='detalles')
-    platillo = models.ForeignKey(Platillo, on_delete=models.CASCADE)
-    cantidad = models.PositiveIntegerField(default=1)
-    subtotal = models.DecimalField(max_digits=8, decimal_places=2)
-    
-    def __str__(self):
-        return f"{self.cantidad}x {self.platillo.nombre} (Pedido #{self.pedido.id})"

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Pedido, Restaurante, Repartidor
+from .models import Pedido, Repartidor
 # Register your models here.
 
 @admin.register(Pedido)
@@ -10,10 +10,10 @@ class PedidoAdmin(admin.ModelAdmin):
     # Solo permite editar el estado desde el admin
     fields = ('restaurante', 'repartidor', 'estado')
     
-@admin.register(Restaurante)
-class RestauranteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nombre')
-    search_fields = ('nombre',)
+#@admin.register(Restaurante)
+#class RestauranteAdmin(admin.ModelAdmin):
+#    list_display = ('id', 'nombre')
+#    search_fields = ('nombre',)
 
 @admin.register(Repartidor)
 class RepartidorAdmin(admin.ModelAdmin):

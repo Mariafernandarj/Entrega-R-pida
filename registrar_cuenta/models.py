@@ -7,7 +7,7 @@ class Usuario(models.Model):
         ('repartidor', 'Repartidor'),
         ('restaurante', 'Restaurante'),
     ]
-
+    
     nombre_usuario = models.CharField(max_length=150, unique=True)
     contrasena = models.CharField(max_length=255)
     tipo_usuario = models.CharField(max_length=20, choices=TIPO_CHOICES)

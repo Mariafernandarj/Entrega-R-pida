@@ -10,3 +10,4 @@ urlpatterns = [
     path('logout/', views.ver_pedidos, name='logout')
     
 ]
+
