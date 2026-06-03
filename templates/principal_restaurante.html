@@ -193,7 +193,7 @@
 }
 .action-card:hover::before { opacity: 1; }
 
-/* Solicitudes — acento naranja */
+/* Solicitudes de pedidos — acento naranja */
 .action-card.solicitudes::before {
   background: linear-gradient(135deg, rgba(255,92,26,0.12), rgba(255,181,71,0.06));
 }
@@ -411,7 +411,7 @@
 
   <!-- Saludo -->
   <div class="home-greeting">
-    <div class="label">Panel del repartidor</div>
+    <div class="label">Panel del restaurante</div>
     <h1>¿Qué vas a hacer<br>hoy, {{request.user.username}}?</h1>
     <p>Revisa las solicitudes disponibles o consulta los pedidos que ya tienes asignados.</p>
   </div>
@@ -491,3 +491,4 @@
   cargarStats();
 </script>
 {% endblock %}
+

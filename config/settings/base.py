@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'solicitudes_reparto',
     'navegar_menus',
     'principal_repartidor',
+    'principal_restaurante'
 ]
 
 MIDDLEWARE = [
