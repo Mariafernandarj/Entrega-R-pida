@@ -9,13 +9,8 @@ class PedidoAdmin(admin.ModelAdmin):
     search_fields = ('id',)
     # Solo permite editar el estado desde el admin
     fields = ('restaurante', 'repartidor', 'estado')
-    
-#@admin.register(Restaurante)
-#class RestauranteAdmin(admin.ModelAdmin):
-#    list_display = ('id', 'nombre')
-#    search_fields = ('nombre',)
 
 @admin.register(Repartidor)
 class RepartidorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nombre', 'user') 
+    list_display = ('id', 'nombre', 'nombre_usuario_repartidor') 
     search_fields = ('nombre', 'user__username')

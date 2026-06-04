@@ -56,7 +56,7 @@ def iniciar_sesion(request):
                     return redirect('principal_repartidor')  # <- Cambia aquí para mandarlo a su panel
                 
                 elif info_usuario.tipo_usuario == 'restaurante':
-                    return redirect('pagina_principal')  # O la de comercio si es tu caso
+                    return redirect('principal_restaurante')  # O la de comercio si es tu caso
                 
                 elif info_usuario.tipo_usuario == 'cliente':
                     return redirect('pagina_principal')

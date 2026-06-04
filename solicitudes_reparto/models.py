@@ -16,6 +16,7 @@ class Pedido(models.Model):
     ESTADO_CHOICES = [
         ('pendiente', 'Pendiente'),
         ('aceptado', 'Aceptado'),
+        ('rechazado', 'Rechazado'),
         ('preparando', 'En preparación'),
         ('entregado_repartidor', 'Entregado a repartidor'),
         ('recibido', 'Recibido'),
@@ -63,18 +64,11 @@ class Pedido(models.Model):
         
     class Meta:
         ordering = ['-fecha_creacion']
-
-#class Restaurante(models.Model):
- #   nombre = models.CharField(max_length=100)
-  #  direccion = models.CharField(max_length=255, blank=True, null=True)
-   # telefono = models.CharField(max_length=20, blank=True, null=True)
-    #contrasena = models.CharField(max_length=20, blank=True, null=True)
-
-    def __str__(self):
-        return self.nombre
     
 class Repartidor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    #user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # Reemplazamos el OneToOneField por un campo de texto para mantener el vínculo lógico con Usuario
+    nombre_usuario_repartidor = models.CharField(max_length=150, unique=True, null=True, blank=True)
     nombre = models.CharField(max_length=100)
 
     def __str__(self):

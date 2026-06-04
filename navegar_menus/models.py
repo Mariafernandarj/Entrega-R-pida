@@ -1,6 +1,9 @@
 from django.db import models
 
 class Restaurante(models.Model):
+    #Relación con usuario
+    nombre_usuario_dueno = models.CharField(max_length=150, unique=True, null=True, blank=True)
+    
     nombre = models.CharField(max_length=150)
     direccion = models.CharField(max_length=255)
     imagen = models.ImageField(upload_to='restaurantes/', blank=True, null=True)
