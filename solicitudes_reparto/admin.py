@@ -13,9 +13,9 @@ class PedidoAdmin(admin.ModelAdmin):
 #@admin.register(Restaurante)
 #class RestauranteAdmin(admin.ModelAdmin):
 #    list_display = ('id', 'nombre')
-#    search_fields = ('nombre',)
+ #   search_fields = ('nombre',)
 
 @admin.register(Repartidor)
 class RepartidorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'nombre', 'user') 
-    search_fields = ('nombre', 'user__username')
+    list_display = ('id', 'nombre', 'nombre_usuario_repartidor') 
+    search_fields = ('nombre', 'nombre_usuario_repartidor')
