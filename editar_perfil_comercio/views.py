@@ -1,12 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from solicitudes_reparto.models import Restaurante
+from navegar_menus.models import Restaurante
 from django.contrib.auth import update_session_auth_hash #para que Django no cierre sesion al cambiar la contraseña
 
 def ver_perfil(request):
     # se cargan los datos reales de la BD
     #se busca al restaurante que se llame igual al nombre de ususario que haya iniciado sesion
-    restaurante_actual, creado = Restaurante.objects.get_or_create(nombre=request.user.username)
+    restaurante_actual = Restaurante.objects.filter(nombre=request.user.username).first()
+    if not restaurante_actual:
+        restaurante_actual = Restaurante.objects.create(nombre=request.user.username)
     contexto = {
         'restaurante': restaurante_actual
     }
@@ -15,8 +17,10 @@ def ver_perfil(request):
 def editar_perfil(request):
     #muestra el restaurante a ser editado
     #muestra los datos especificos del uduario que tenga la sesion abierta
-    restaurante_actual, creado = Restaurante.objects.get_or_create(nombre=request.user.username)
-    
+    restaurante_actual = Restaurante.objects.filter(nombre=request.user.username).first()
+    if not restaurante_actual:
+        restaurante_actual = Restaurante.objects.create(nombre=request.user.username)
+
     if request.method == 'POST':
         # loq ue el usuario escribe en e formulario
         nuevo_nombre = request.POST.get('nombre')
@@ -34,7 +38,7 @@ def editar_perfil(request):
             
         # FLUJO ALTERNATIVO: los datos ya existen en otro restaurante
         #se filtran los restaurantes de la base de datos y se excluye al restaurante actual
-        otros_restaurantes = Restaurante.objects.exclude(id=restaurante_actual.id)
+        otros_restaurantes = Restaurante.objects.exclude(nombre=restaurante_actual.nombre)
         
         #se revisa si haya algun restaurante con la direccion nueva
         if otros_restaurantes.filter(direccion=nueva_direccion).exists():

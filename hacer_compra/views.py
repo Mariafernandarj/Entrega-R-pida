@@ -49,29 +49,56 @@ def adquirir_ahora(request, id_platillo):
 
 def agregar_carrito(request):
     # logica del Controlador 'AgregarCarritoControlador'
-    # para guardar el producto en la sesión o BD temporal.
+    # para guardar el producto en la sesion o BD temporal.
     return render(request, 'agregar_carrito.html')
 
 def pago_producto(request):
-    # Pantalla para seleccionar el método de pago
+    # Pantalla para seleccionar el metodo de pago
     return render(request, 'pago_producto.html')
 
 def pago_tarjeta(request):
-    if request.method == 'POST':
-        # FLUJO EXCEPCIONAL: Simulación de recursos insuficientes o caída del servidor
-        # if not validacion_banco():
-        #     messages.error(request, "Recursos insuficientes o error de conexión.")
-        #     return render(request, 'pago_tarjeta.html')
+    if request.user.is_authenticated:
+        # se busca el platillo mas reciente que el cliente haya seleccionado y que este en pendiente
+        pedido_actual = Pedido.objects.filter(cliente__nombre_usuario=request.user.username, estado='pendiente').order_by('-id').first()
         
-        # FLUJO NORMAL: Compra exitosa
-        messages.success(request, "¡Compra exitosa! Tu pedido está en camino.")
-        return redirect('buscar_comida') 
-        
-    return render(request, 'pago_tarjeta.html')
+        if pedido_actual:
+            # nombre del platillo al pedido para que sea el campo del cargo
+            detalle = DetallePedido.objects.filter(pedido=pedido_actual).first()
+            if detalle:
+                pedido_actual.platillo = detalle.platillo
+            
+            # cuando el usuario le haya dadp al boton de aceptar
+            if request.method == 'POST':
+                # se cambia la columna a true cuando ya se haya pagado
+                pedido_actual.pagado = True
+                pedido_actual.save()
+                
+                messages.success(request, "¡Pago exitoso con Tarjeta! Tu pedido está en preparación.")
+                return redirect('pagina_principal') # O a la pantalla de éxito que decidas
+                
+            # Si solo entro a ver la pantalla, se le manda los datos
+            return render(request, 'pago_tarjeta.html', {'pedido': pedido_actual})
+            
+    # Si no hay pedido o no hay sesion, se regresa a pago con trjeta
+    return redirect('pago_tarjeta.html')
 
 def pago_transferencia(request):
-    if request.method == 'POST':
-        messages.success(request, "¡Transferencia validada y compra exitosa!")
-        return redirect('buscar_comida')
+    if request.user.is_authenticated:
+        pedido_actual = Pedido.objects.filter(cliente__nombre_usuario=request.user.username, estado='pendiente').order_by('-id').first()
         
-    return render(request, 'pago_transferencia.html')
+        if pedido_actual:
+            detalle = DetallePedido.objects.filter(pedido=pedido_actual).first()
+            if detalle:
+                pedido_actual.platillo = detalle.platillo
+                
+            if request.method == 'POST':
+                # se cambia la columna a true cuando ya se haya pagado
+                pedido_actual.pagado = True
+                pedido_actual.save()
+                
+                messages.success(request, "¡Transferencia exitosa! Tu pedido está en preparación.")
+                return redirect('pagina_principal') 
+                
+            return render(request, 'pago_transferencia.html', {'pedido': pedido_actual})
+            
+    return redirect('pago_transferencia.html')

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from navegar_menus.models import Restaurante, Platillo
 
 def buscar_platillo(request):
@@ -6,6 +6,7 @@ def buscar_platillo(request):
     texto_busqueda = request.GET.get('q', '').strip()
     
     resultados_platillos = []
+    resultados_restaurantes = []
 
     if texto_busqueda:
         # Busca en la base de datos 
@@ -17,12 +18,25 @@ def buscar_platillo(request):
                     'restaurante': platillo.restaurante,
                     'platillo': platillo
             })
+    
+        resultados_restaurantes = Restaurante.objects.filter(nombre__icontains=texto_busqueda)
 
     contexto = {
         'texto_busqueda': texto_busqueda,
         'resultados': resultados_platillos,
+        'resultados_restaurantes': resultados_restaurantes
     }
     return render(request, 'busquedaPlatillo.html', context=contexto)
 
-def restaurante_seleccionado(request, id):
-    return render(request, 'restauranteSeleccionado.html', {'restaurante_id': id})
+def restauranteSeleccionado(request, id_restaurante):
+    # buscar el restaurante especifico
+    restaurante = get_object_or_404(Restaurante, id=id_restaurante)
+    
+    # se buscan todos los platillos que le pertenecen a ese restaurante
+    platillos = Platillo.objects.filter(restaurante=restaurante)
+    
+    # mandarlos a la pantalla
+    return render(request, 'restauranteSeleccionado.html', {
+        'restaurante': restaurante,
+        'platillos': platillos
+    })

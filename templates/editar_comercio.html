@@ -21,7 +21,7 @@
         <input type="text" name="direccion" value="{{ restaurante.direccion }}" style="margin-bottom: 10px; width: 100%;"><br>
         
         <label>Teléfono:</label><br>
-        <input type="text" name="telefono" value="{{ restaurante.telefono }}" style="margin-bottom: 20px; width: 100%;"><br>
+        <input type="text" name="telefono" id="telefono" maxlength="10" value="{{ restaurante.telefono|default_if_none:'' }}" style="margin-bottom: 20px; width: 100%;"><br>
 
         <label>Contraseña:</label><br>
         <input type="text" name="contrasena" value="{{ restaurante.contrasena }}" style="margin-bottom: 20px; width: 100%;"><br>
@@ -32,4 +32,28 @@
     </form>
     
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      // para el telefono
+      const inputTelefono = document.getElementById('telefono');
+      
+      if (inputTelefono) {
+          // lee lo que teclee el ususario
+          inputTelefono.addEventListener('input', function(e) {
+              // borra cualquiercosa que no sea un numero
+              let valorLimpio = this.value.replace(/\D/g, '');
+              
+              // si escribe mas de 10 numeros se corta
+              if (valorLimpio.length > 10) {
+                  valorLimpio = valorLimpio.slice(0, 10);
+              }
+              
+              // se devuelve el valor limpio a la pantalla
+              this.value = valorLimpio;
+          });
+      }
+  });
+</script>
+
 {% endblock %}
