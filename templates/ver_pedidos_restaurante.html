@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Mis Pedidos Asignados</h2>
+
+{% for pedido in pedidos %}
+  <div>
+    <p>Pedido #{{ pedido.id }} - {{ pedido.restaurante }}</p>
+    <p>Estado: {{ pedido.estado }}</p>
+  </div>
+{% empty %}
+  <p>No tienes pedidos asignados aún.</p>
+  {% endfor %}
+{% for message in messages %}
+  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+{% endfor %}
+
+{% endblock %}

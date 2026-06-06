@@ -32,8 +32,8 @@ def aceptar_solicitud(request, pedido_id):
             messages.warning(request, "Este pedido ya no está disponible")
             return redirect('solicitudes_de_reparto')
         try:
-            # HARDCODED para pruebas
-            repartidor = request.user.repartidor
+            #Corrección usanodo el nombre usuario
+            repartidor = Repartidor.objects.get(nombre_usuario_repartidor=request.user.username)
             pedido.repartidor = repartidor
             pedido.estado = 'aceptado'
             pedido.save()
@@ -47,7 +47,7 @@ def aceptar_solicitud(request, pedido_id):
         except Repartidor.DoesNotExist:
             messages.error(
                 request,
-                 f"No existe un repartidor con ID {REPARTIDOR_PRUEBA_ID}. "
+                 f"No puedes aceptar pedidos porque no tiene perfil repartidor :( "
             )            
         except Exception as e:
             #Error al guardar
@@ -56,36 +56,33 @@ def aceptar_solicitud(request, pedido_id):
         
     return redirect('solicitudes_de_reparto')
 
-
-#def ver_pedidos(request):
-    #"""Muestra los pedidos asignados al repartidor actual"""
-    #try:
-        #repartidor = request.user.repartidor
-        #pedidos = Pedido.objects.filter(
-           # repartidor = repartidor,
-           # estado = 'aceptado'
-     #   )
-    #except Repartidor.DoesNotExist:
-        
-        #pedidos = Pedido.objects.none()
-        #messages.error(request, "Tu usuario no tiene perfil de repartidor.")
-    #return render(request, 'ver_pedidos.html', {'pedidos': pedidos})
 def ver_pedidos(request):
+    # Verificar qué rol tiene el usuario realmente
     try:
-        repartidor = request.user.repartidor
+        cuenta = Usuario.objects.get(nombre_usuario=request.user.username)
+        
+    except Usuario.DoesNotExist:
+        return redirect('iniciar_sesion')
+
+    if cuenta.tipo_usuario != 'repartidor':
+        messages.error(
+            request,
+            "Acceso denegado: Esta área es solo para repartidores."
+        )
+        return redirect('principal_repartidor')
+        
+    try:
+        repartidor = Repartidor.objects.get(nombre_usuario_repartidor=request.user.username)
 
     except Repartidor.DoesNotExist:
-
-        # CREAR AUTOMÁTICAMENTE EL PERFIL
-        repartidor = Repartidor.objects.create(
-            user=request.user,
-            nombre=request.user.username
-        )
+        messages.error(request, "No existe un perfil de repartidor asociado.")
+        return redirect('principal_repartidor')
+    
     pedidos = Pedido.objects.filter(
         repartidor=repartidor,
         estado='aceptado'
     )
-
+    
     return render(
         request,
         'ver_pedidos.html',
