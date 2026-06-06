@@ -392,7 +392,7 @@
 
   <div class="home-actions">
 
-    <a href="text-decoration: none;" class="action-card solicitudes" onclick="return false;">
+    <a href="{% url 'solicitudes_restaurante' %}" class="action-card solicitudes">
       <div class="action-badge" id="badgeSolicitudes">—</div>
       <div class="action-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -406,7 +406,7 @@
       </div>
     </a>
 
-    <a href="text-decoration: none;" class="action-card ver-pedidos" onclick="return false;">
+    <a href="{% url 'ver_pedidos_restaurante' %}" class="action-card ver-pedidos">
       <div class="action-badge blue" id="badgePedidos">—</div>
       <div class="action-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

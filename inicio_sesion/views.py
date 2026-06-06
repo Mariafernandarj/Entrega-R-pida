@@ -48,7 +48,7 @@ def iniciar_sesion(request):
                     return redirect('principal_repartidor')
                 
                 elif info_usuario.tipo_usuario == 'restaurante':
-                    return redirect('principal_restaurante')  
+                    return redirect('principal_restaurante')  # O la de comercio si es tu caso
                 
                 elif info_usuario.tipo_usuario == 'cliente':
                     return redirect('pagina_principal')
@@ -75,5 +75,5 @@ def perfil_comercio(request):
 
 #vista para cerrar sesion
 class CustomLogoutView(LogoutView):
-    # Cuando termine de destruir la sesión, lo mandamos al login
+    # Cuando termine de destruir la sesión del repartidor/usuario, lo mandamos al login
     next_page = 'iniciar_sesion'

@@ -59,6 +59,8 @@ class Pedido(models.Model):
         ordering = ['-fecha_creacion']
     
 class Repartidor(models.Model):
+    #user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # Reemplazamos el OneToOneField por un campo de texto para mantener el vínculo lógico con Usuario
     nombre_usuario_repartidor = models.CharField(max_length=150, unique=True, null=True, blank=True)
     nombre = models.CharField(max_length=100)
 
