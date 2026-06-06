@@ -22,7 +22,7 @@ class Pedido(models.Model):
         ('expirado', 'Expirado'),
     ]
 
-    cliente = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pedidos_cliente')
+    cliente = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pedidos', )
     restaurante = models.ForeignKey('navegar_menus.Restaurante', on_delete=models.CASCADE)
     repartidor = models.ForeignKey('Repartidor', null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -84,3 +84,11 @@ class DetallePedido(models.Model):
     
     def __str__(self):
         return f"{self.cantidad}x {self.platillo.nombre} (Pedido #{self.pedido.id})"
+
+
+#class Cliente(models.Model):
+    # Esto vincula al cliente directamente con su cuenta de acceso
+    #usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='perfil_cliente')
+
+    #def __str__(self):
+       # return f"Cliente: {self.usuario.nombre_usuario}"

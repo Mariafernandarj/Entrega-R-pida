@@ -15,7 +15,7 @@ def procesar_pedido_restaurante(request, pedido_id):
         # Validar que el pedido siga pendiente (pero SIN expiración)
         if pedido.estado != 'pendiente':
             messages.warning(request, "Este pedido ya fue procesado.")
-            return redirect('pedidos_restaurante')
+            return redirect('solicitudes_restaurante')
 
         try:
             # Suponiendo que mandas desde el frontend una acción: 'aceptar' o 'rechazar'
@@ -37,16 +37,16 @@ def procesar_pedido_restaurante(request, pedido_id):
 
             else:
                 messages.error(request, "Acción no válida.")
-                return redirect('pedidos_restaurante')
+                return redirect('solicitudes_restaurante')
 
             pedido.save()
-            return redirect('pedidos_restaurante')
+            return redirect('solicitudes_restaurante')
 
         except Exception as e:
             print(f"Error al procesar pedido #{pedido_id}: {e}")
             messages.error(request, "Ocurrió un error al procesar el pedido")
 
-    return redirect('pedidos_restaurante')
+    return redirect('solicitudes_restaurante')
 
 def solicitudes_restaurante(request):
     try:
@@ -68,15 +68,10 @@ def solicitudes_restaurante(request):
 def ver_pedidos_restaurante(request):
     # Verificar que exista el usuario
     try:
-        cuenta = Usuario.objects.get(
-            nombre_usuario=request.user.username
-        )
+        cuenta = Usuario.objects.get(nombre_usuario=request.user.username)
 
         if cuenta.tipo_usuario != 'restaurante':
-            messages.error(
-                request,
-                "Acceso denegado: Esta área es solo para restaurantes."
-            )
+            messages.error(request, "Acceso denegado: Esta área es solo para restaurantes.")
             return redirect('principal_restaurante')
 
     except Usuario.DoesNotExist:
@@ -84,23 +79,46 @@ def ver_pedidos_restaurante(request):
 
     # Buscar el restaurante asociado
     try:
-        restaurante = Restaurante.objects.get(
-            nombre_usuario_dueno=request.user.username
-        )
-
+        restaurante = Restaurante.objects.get( nombre_usuario_dueno=request.user.username )
     except Restaurante.DoesNotExist:
-        messages.error(
-            request,
-            "No existe un perfil de restaurante asociado a esta cuenta."
-        )
+        messages.error(request, "No existe un perfil de restaurante asociado a esta cuenta.")
         return redirect('principal_restaurante')
 
     # Obtener pedidos del restaurante
     pedidos = Pedido.objects.filter(
         restaurante=restaurante,
-        estado='aceptado'
+        #estado='aceptado'
+        estado__in=['aceptado', 'preparando', 'entregado_repartidor', 'rechazado']
     )
 
     return render( request, 'ver_pedidos_restaurante.html',
         { 'pedidos': pedidos }
     )
+
+def cambiar_estado_pedido(request, pedido_id):
+    if request.method == 'POST':
+        pedido = get_object_or_404(Pedido, id=pedido_id)
+
+        try:
+            mi_restaurante = Restaurante.objects.get(nombre_usuario_dueno=request.user.username)
+        except Restaurante.DoesNotExist:
+            messages.error(request, "No tienes un perfil de restaurante.")
+            return redirect('solicitudes_restaurante')
+
+        if pedido.restaurante != mi_restaurante:
+            messages.error(request, "No tienes permiso para modificar este pedido.")
+            return redirect('solicitudes_restaurante')
+
+        # Estados que el restaurante puede asignar
+        ESTADOS_PERMITIDOS = ['aceptado', 'rechazado', 'preparando', 'entregado_repartidor']
+
+        nuevo_estado = request.POST.get('estado')
+
+        if nuevo_estado not in ESTADOS_PERMITIDOS:
+            messages.error(request, "Estado no válido.")
+            return redirect('ver_pedidos_restaurante')
+        pedido.estado = nuevo_estado
+        pedido.save()
+        messages.success(request, f"Pedido #{pedido.id} actualizado a '{pedido.get_estado_display()}'.")
+
+    return redirect('ver_pedidos_restaurante')
