@@ -1,31 +1,72 @@
-{% extends "base.html" %}
-
-{% block title %}Restaurante - RepártoYa{% endblock %}
-
+{% extends 'base.html' %}
 {% block content %}
-<div class="page-content">
-    <div style="display: flex; gap: 40px;">
-        <!-- Columna Izquierda (Foto y Datos del Restaurante) -->
-        <div class="card" style="flex: 1; max-width: 300px; text-align: center;">
-            <div style="background: #333; height: 200px; border-radius: 8px; margin-bottom: 20px;"></div>
-            <h2>Nombre del Restaurante</h2>
-            <p style="color: var(--text-muted);">Dirección del local</p>
-        </div>
+<link rel="stylesheet" href="/static/css/navegar_menus.css">
 
-        <!-- Columna Derecha (Menú) -->
-        <div style="flex: 2;">
-            <h3 style="margin-bottom: 20px;">Menús</h3>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="card">
-                    <h4>Platillo 1</h4>
-                    <p style="font-size: 12px; color: var(--text-muted);">Detalles</p>
-                </div>
-                <div class="card">
-                    <h4>Platillo 2</h4>
-                    <p style="font-size: 12px; color: var(--text-muted);">Detalles</p>
-                </div>
+<div class="topbar">
+    <div class="logo">😊</div>
+    <div class="busqueda">
+        <form method="GET" action="{% url 'busqueda_platillo' %}" style="width: 100%; display: flex;">
+            <input type="text" name="q" placeholder="Busca comida o restaurantes y presiona Enter">
+        </form>
+    </div>
+    <div class="topbar-icons">
+        <div class="user-menu-wrapper">
+            <span id="userIcon" onclick="toggleMenu()" style="cursor:pointer;">👤</span>
+            <div class="user-dropdown" id="userDropdown">
+                <a href="{% url 'perfil_comercio' %}">Editar Datos</a>
+                <a href="#" class="cerrar-sesion">Cerrar Sesión</a>
             </div>
+        </div>
+        <span>🛒</span>
+    </div>
+</div>
+
+<div style="background-color: #111111; min-height: 80vh; padding: 100px 40px 40px 40px; display: flex; gap: 30px; font-family: Arial, sans-serif; color: white;">
+    
+    <div style="background-color: #1c1c1c; padding: 20px; border-radius: 12px; width: 300px; height: fit-content; text-align: center; border: 1px solid #333;">
+        {% if restaurante.imagen %}
+            <img src="{{ restaurante.imagen.url }}" alt="{{ restaurante.nombre }}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; margin-bottom: 15px;">
+        {% else %}
+            <div style="background-color: #333; height: 200px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 50px; margin-bottom: 15px;">🍽️</div>
+        {% endif %}
+        
+        <h2 style="margin: 0 0 10px 0; font-size: 24px;">{{ restaurante.nombre }}</h2>
+        <p style="color: #888; margin: 0; font-size: 14px;">{{ restaurante.direccion|default:"Dirección del local" }}</p>
+    </div>
+
+    <div style="flex-grow: 1;">
+        <h2 style="margin-top: 0; margin-bottom: 20px; font-size: 22px;">Menús</h2>
+        
+        <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+            {% for platillo in platillos %}
+                <div onclick="window.location.href='{% url 'busqueda_platillo' %}?q={{ platillo.nombre }}'" style="background-color: #1c1c1c; padding: 20px; border-radius: 12px; border: 1px solid #333; width: calc(50% - 10px); cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='#ff6600'" onmouseout="this.style.borderColor='#333'">
+                    <h3 style="margin: 0 0 5px 0; font-size: 18px; color: white;">{{ platillo.nombre }}</h3>
+                    <p style="margin: 0 0 10px 0; color: #ff6600; font-weight: bold;">${{ platillo.precio }}</p>
+                    <p style="margin: 0; color: #888; font-size: 14px;">{{ platillo.descripcion|truncatewords:8 }}</p>
+                    
+                    {% if platillo.agotado %}
+                        <p style="color: red; font-size: 12px; margin-top: 10px; font-weight: bold;">Temporalmente agotado</p>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p style="color: #888; font-size: 16px;">Este restaurante aún no ha subido platillos a su menú.</p>
+            {% endfor %}
         </div>
     </div>
 </div>
+
+<script>
+    function toggleMenu() {
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function(e) {
+        const wrapper = document.querySelector('.user-menu-wrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) dropdown.style.display = 'none';
+        }
+    });
+</script>
 {% endblock %}

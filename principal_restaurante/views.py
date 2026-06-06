@@ -3,7 +3,6 @@ from django.contrib import messages
 from registrar_cuenta.models import Usuario
 from navegar_menus.models import Restaurante
 
-# Create your views here.
 def principal_restaurante(request):
     if not request.user.is_authenticated:
         return redirect('iniciar_sesion')
