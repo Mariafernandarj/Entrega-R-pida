@@ -17,4 +17,5 @@ urlpatterns = [
     path('', include('principal_repartidor.urls')),
     path('', include('principal_restaurante.urls')),
     path('', include('solicitudes_restaurante.urls')),
+    path('', include('consultar_historial_pedidos.urls')),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

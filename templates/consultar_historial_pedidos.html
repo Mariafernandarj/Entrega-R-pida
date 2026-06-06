@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block title %}Historial de Pedidos{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 40px auto; padding: 20px; font-family: sans-serif; color: #fff;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 15px;">
+        <h2>
+            {% if tipo_usuario == 'cliente' %}
+                🎒 Mi Historial de Pedidos
+            {% elif tipo_usuario == 'restaurante' %}
+                🍳 Pedidos Recibidos
+            {% elif tipo_usuario == 'repartidor' %}
+                🚴 Mis Entregas Asignadas
+            {% endif %}
+        </h2>
+        <span style="background-color: #ff6600; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: bold; text-transform: uppercase;">
+            Rol: {{ tipo_usuario }}
+        </span>
+    </div>
+
+    {% if not pedidos %}
+        <div style="text-align: center; padding: 5px 20px; background-color: #1a1a1a; border-radius: 8px; border: 1px dashed #444; color: #aaa;">
+            <p style="font-size: 18px;">No se encontraron registros en el historial de pedidos todavía.</p>
+        </div>
+    {% else %}
+        
+        <div style="background-color: #1a1a1a; border-radius: 8px; overflow: hidden; border: 1px solid #333;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="background-color: #262626; color: #ff6600; border-bottom: 2px solid #333;">
+                        <th style="padding: 15px;">ID Pedido</th>
+                        <th style="padding: 15px;">Fecha</th>
+                        
+                        {% if tipo_usuario == 'cliente' %}
+                            <th style="padding: 15px;">Restaurante</th>
+                        {% else %}
+                            <th style="padding: 15px;">Cliente</th>
+                        {% endif %}
+                        
+                        <th style="padding: 15px;">Estado</th>
+                        <th style="padding: 15px; text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                        <tr style="border-bottom: 1px solid #262626; transition: 0.2s;" onmouseover="this.style.backgroundColor='#222'" onmouseout="this.style.backgroundColor='transparent'">
+                            <td style="padding: 15px; font-weight: bold; color: #ff6600;">#{{ pedido.id }}</td>
+                            <td style="padding: 15px; color: #ccc;">{{ pedido.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                            
+                            {% if tipo_usuario == 'cliente' %}
+                                <td style="padding: 15px;">{{ pedido.restaurante.nombre }}</td>
+                            {% else %}
+                                <td style="padding: 15px;">{{ pedido.cliente.nombre_usuario }}</td>
+                            {% endif %}
+                            
+                            <td style="padding: 15px;">
+                                <span style="padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; 
+                                    {% if pedido.estado == 'Entregado' %} background-color: #0f291e; color: #4ade80; border: 1px solid #1e5c3a;
+                                    {% elif pedido.estado == 'En camino' %} background-color: #2a2415; color: #ffb703; border: 1px solid #644e0a;
+                                    {% else %} background-color: #2d1616; color: #f87171; border: 1px solid #5c1e1e; {% endif %}">
+                                    {{ pedido.estado }}
+                                </span>
+                            </td>
+                            
+                            <td style="padding: 15px; text-align: right; font-weight: bold; color: #4ade80;">
+                                ${{ pedido.total }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <div style="margin-top: 30px; text-align: center;">
+        <a href="{% url 'pagina_principal' %}" style="background-color: transparent; border: 1px solid #555; color: #aaa; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.borderColor='#ff6600'; this.style.color='#fff'" onmouseout="this.style.borderColor='#555'; this.style.color='#aaa'">
+            Volver al Menú Principal
+        </a>
+    </div>
+
+</div>
+{% endblock %}
