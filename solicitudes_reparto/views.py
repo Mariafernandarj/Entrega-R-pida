@@ -60,26 +60,29 @@ def ver_pedidos(request):
     # Verificar qué rol tiene el usuario realmente
     try:
         cuenta = Usuario.objects.get(nombre_usuario=request.user.username)
-        if cuenta.tipo_usuario != 'repartidor':
-            messages.error(request, "Acceso denegado: Esta área es solo para repartidores.")
-            return redirect('principal_repartidor') 
+        
     except Usuario.DoesNotExist:
-        return redirect('iniciar_sesion') # Si ni siquiera existe en tu tabla, que inicie sesión
+        return redirect('iniciar_sesion')
+
+    if cuenta.tipo_usuario != 'repartidor':
+        messages.error(
+            request,
+            "Acceso denegado: Esta área es solo para repartidores."
+        )
+        return redirect('principal_repartidor')
+        
     try:
         repartidor = Repartidor.objects.get(nombre_usuario_repartidor=request.user.username)
 
     except Repartidor.DoesNotExist:
-
-        # CREAR AUTOMÁTICAMENTE EL PERFIL
-        repartidor = Repartidor.objects.create(
-            nombre_usuario_repartidor=request.user.username,
-            nombre=request.user.username
-        )
+        messages.error(request, "No existe un perfil de repartidor asociado.")
+        return redirect('principal_repartidor')
+    
     pedidos = Pedido.objects.filter(
         repartidor=repartidor,
         estado='aceptado'
     )
-
+    
     return render(
         request,
         'ver_pedidos.html',

@@ -4,6 +4,7 @@ from solicitudes_reparto.models import Pedido
 from navegar_menus.models import Restaurante
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from registrar_cuenta.models import Usuario
 
 def procesar_pedido_restaurante(request, pedido_id):
     """El restaurante acepta o rechaza un pedido según disponibilidad de insumos"""
@@ -63,3 +64,43 @@ def solicitudes_restaurante(request):
     return render(request, 'solicitudes_restaurante.html', {
         'pedidos': pedidos
     })
+
+def ver_pedidos_restaurante(request):
+    # Verificar que exista el usuario
+    try:
+        cuenta = Usuario.objects.get(
+            nombre_usuario=request.user.username
+        )
+
+        if cuenta.tipo_usuario != 'restaurante':
+            messages.error(
+                request,
+                "Acceso denegado: Esta área es solo para restaurantes."
+            )
+            return redirect('principal_restaurante')
+
+    except Usuario.DoesNotExist:
+        return redirect('iniciar_sesion')
+
+    # Buscar el restaurante asociado
+    try:
+        restaurante = Restaurante.objects.get(
+            nombre_usuario_dueno=request.user.username
+        )
+
+    except Restaurante.DoesNotExist:
+        messages.error(
+            request,
+            "No existe un perfil de restaurante asociado a esta cuenta."
+        )
+        return redirect('principal_restaurante')
+
+    # Obtener pedidos del restaurante
+    pedidos = Pedido.objects.filter(
+        restaurante=restaurante,
+        estado='aceptado'
+    )
+
+    return render( request, 'ver_pedidos_restaurante.html',
+        { 'pedidos': pedidos }
+    )

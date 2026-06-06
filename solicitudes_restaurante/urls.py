@@ -13,4 +13,9 @@ urlpatterns = [
         views.procesar_pedido_restaurante,
         name='procesar_pedido_restaurante'
     ),
+    path(
+        'ver_pedidos_restaurante/',
+        views.ver_pedidos_restaurante,
+        name='ver_pedidos_restaurante'
+    ),
 ]
