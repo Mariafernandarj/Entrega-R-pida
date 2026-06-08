@@ -10,7 +10,7 @@ def principal_restaurante(request):
         cuenta = Usuario.objects.get(nombre_usuario=request.user.username)
         if cuenta.tipo_usuario != 'restaurante':
             messages.error(request, 'Acceso denegado: esta área es solo para restaurantes.')
-            return redirect('inicio')
+            return redirect('inicio_sesion')
         Restaurante.objects.get_or_create(
             nombre_usuario_dueno=request.user.username,
             defaults={
