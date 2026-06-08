@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from solicitudes_reparto.models import Pedido
+from solicitudes_reparto.views import cambiar_estado_repartidor
 from navegar_menus.models import Restaurante
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
@@ -119,6 +120,14 @@ def cambiar_estado_pedido(request, pedido_id):
             return redirect('ver_pedidos_restaurante')
         pedido.estado = nuevo_estado
         pedido.save()
-        messages.success(request, f"Pedido #{pedido.id} actualizado a '{pedido.get_estado_display()}'.")
+
+        if nuevo_estado == 'entregado_repartidor':
+            repartidor = pedido.asignar_repartidor()
+            if repartidor:
+                messages.success(request, f"Pedido #{pedido.id} enviado a repartidor: {repartidor.nombre}." )
+            else:
+                messages.warning(request, f"Pedido #{pedido.id} listo, pero no hay repartidores disponibles.")
+        else:
+            messages.success(request, f"Pedido #{pedido.id} actualizado a '{pedido.get_estado_display()}'.")
 
     return redirect('ver_pedidos_restaurante')

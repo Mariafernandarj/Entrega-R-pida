@@ -36,31 +36,47 @@ class Pedido(models.Model):
 
     def esta_expirado(self):
         return timezone.now() > self.fecha_limite
+
+    def asignar_repartidor(self):
+        """Asigna el pedido al repartidor con menos pedidos activo"""
+        ESTADOS_ACTIVOS = ['entregado_repartidor', 'recibido', 'en_camino']
+        repartidor = (Repartidor.objects.annotate(pedidos_activos=models.Count('pedido', filter=models.Q(pedido__estado__in=ESTADOS_ACTIVOS))).order_by('pedidos_activos').first())
+        
+        if repartidor:
+            self.repartidor = repartidor
+            self.fecha_asignacion_repartidor = timezone.now()
+            self.fecha_limite = timezone.now() + timedelta(minutes=3)
+            self.save()
+            return repartidor
+        return None
     
     def __str__(self):
         return f"Pedido #{self.id} - {self.estado}"
 
     def reasignar(self):
-        from django.db.models import Count, Q
-        nuevo_repartidor = Repartidor.objects.exclude(
-            id=self.repartidor.id 
-        ).annotate(
-            pedidos_activos=Count('pedido',filter=Q(pedido__estado='aceptado'))
-        ).order_by('pedidos_activos').first()
-
-        if nuevo_repartidor:
-            self.repartidor = nuevo_repartidor
-            self.estado = 'pendiente' 
+        """Si el repartidor actual no aceptó en 3 min, busca otro"""
+        self.estado = 'expirado'  # marca el intento actual
+        repartidor_anterior = self.repartidor
+        self.repartidor = None
+        self.estado = 'entregado_repartidor'
+        self.save()
+        
+        # Busca nuevo repartidor excluyendo al anterior
+        from solicitudes_reparto.models import Repartidor
+        ESTADOS_ACTIVOS = ['entregado_repartidor', 'recibido', 'en_camino']
+        
+        repartidor = (Repartidor.objects.exclude(id=repartidor_anterior.id if repartidor_anterior else None).annotate(pedidos_activos=models.Count('pedido',filter=models.Q(pedido__estado__in=ESTADOS_ACTIVOS))).order_by('pedidos_activos').first())
+        
+        if repartidor:
+            self.repartidor = repartidor
+            self.fecha_asignacion_repartidor = timezone.now()
+            self.fecha_limite = timezone.now() + timedelta(minutes=3)
             self.save()
-            return True
-        return False 
         
     class Meta:
         ordering = ['-fecha_creacion']
     
 class Repartidor(models.Model):
-    #user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # Reemplazamos el OneToOneField por un campo de texto para mantener el vínculo lógico con Usuario
     nombre_usuario_repartidor = models.CharField(max_length=150, unique=True, null=True, blank=True)
     nombre = models.CharField(max_length=100)
 

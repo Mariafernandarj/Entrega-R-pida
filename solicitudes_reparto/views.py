@@ -80,14 +80,43 @@ def ver_pedidos(request):
     
     pedidos = Pedido.objects.filter(
         repartidor=repartidor,
-        estado='aceptado'
+        estado__in=['entregado_repartidor', 'recibido', 'en_camino', 'entregado_cliente']
     )
     
-    return render(
-        request,
-        'ver_pedidos.html',
-        {'pedidos': pedidos}
-    )
+    return render(request,'ver_pedidos.html',{'pedidos': pedidos})
+
+def cambiar_estado_repartidor(request, pedido_id):
+    if request.method == 'POST':
+        pedido = get_object_or_404(Pedido, id=pedido_id)
+
+        try:
+            mi_repartidor = Repartidor.objects.get(nombre_usuario_repartidor=request.user.username)
+        except Repartidor.DoesNotExist:
+            messages.error(request, "No tienes perfil de repartidor.")
+            return redirect('ver_pedidos')
+
+        if pedido.repartidor != mi_repartidor:
+            messages.error(request, "Este pedido no te pertenece.")
+            return redirect('ver_pedidos')
+
+        ESTADOS_PERMITIDOS = ['recibido', 'en_camino', 'entregado_cliente', 'expirado']
+        nuevo_estado = request.POST.get('estado')
+
+        if nuevo_estado not in ESTADOS_PERMITIDOS:
+            messages.error(request, "Estado no válido.")
+            return redirect('ver_pedidos')
+
+        # Verifica expiración antes de aceptar
+        if pedido.esta_expirado() and nuevo_estado != 'expirado':
+            pedido.reasignar()
+            messages.warning(request, "El tiempo expiró. El pedido fue reasignado.")
+            return redirect('ver_pedidos')
+
+        pedido.estado = nuevo_estado
+        pedido.save()
+        messages.success(request, f"Pedido #{pedido.id} actualizado a '{pedido.get_estado_display()}'.")
+
+    return redirect('ver_pedidos')
 
 def test_base(request):
     return render(request, "test_base.html")
