@@ -13,7 +13,8 @@ def solicitudes_de_reparto(request):
     #Elimina pedidos expirados
     pedidos_expirados = Pedido.objects.filter(
         estado='preparando',
-        repartidor__isnull=True,
+        repartidor__isnull=False,
+        fecha_limite__isnull=False,
         fecha_limite__lt = timezone.now()
     )
     
@@ -22,11 +23,11 @@ def solicitudes_de_reparto(request):
 
     try:
         repartidor = Repartidor.objects.get(nombre_usuario_repartidor=request.user.username)
-        pedidos_disponibles = Pedido.objects.filter(estado='preparando', repartidor=repartidor)
+        pedidos_disponibles = Pedido.objects.filter(estado='preparando', repartidor=repartidor, fecha_limite__isnull=False)
     except Repartidor.DoesNotExist:
         pedidos_disponibles = Pedido.objects.none()
         
-    return render(request, 'solicitudes_de_reparto.html', { 'pedidos': pedidos_disponibles })
+    return render(request, 'solicitudes_de_reparto.html', { 'pedidos': pedidos_disponibles})
     
 def aceptar_solicitud(request, pedido_id):
     """Acepta un pedido y lo asigna al repartidor """
