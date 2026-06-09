@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'navegar_menus',
     'principal_repartidor',
     'principal_restaurante',
-    'consultar_historial_pedidos'
+    'consultar_historial_pedidos',
+    'cancelar_pedido'
 ]
 
 MIDDLEWARE = [

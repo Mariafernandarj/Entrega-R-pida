@@ -40,6 +40,9 @@
                         
                         <th style="padding: 15px;">Estado</th>
                         <th style="padding: 15px; text-align: right;">Total</th>
+                        {% if tipo_usuario == 'cliente' %}
+                            <th style="padding: 15px; text-align: right;">Acciones</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -66,6 +69,17 @@
                             <td style="padding: 15px; text-align: right; font-weight: bold; color: #4ade80;">
                                 ${{ pedido.total }}
                             </td>
+                            {% if tipo_usuario == 'cliente' %}
+                                <td style="padding: 15px; text-align: right;">
+                                    {% if pedido.estado|lower == 'recibido' or pedido.estado|lower == 'pendiente' or pedido.estado|lower == 'en preparación' %}
+                                        <a href="{% url 'cancelar_mi_pedido' pedido.id %}" style="background-color: #ef4444; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: bold; transition: 0.3s;" onmouseover="this.style.backgroundColor='#dc2626'" onmouseout="this.style.backgroundColor='#ef4444'">
+                                            Cancelar
+                                        </a>
+                                    {% else %}
+                                        <span style="color: #666; font-size: 12px; font-style: italic;">No cancelable</span>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </tbody>
