@@ -5,6 +5,8 @@ from solicitudes_reparto.views import cambiar_estado_repartidor
 from navegar_menus.models import Restaurante
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from datetime import timedelta
+from django.utils import timezone
 from registrar_cuenta.models import Usuario
 
 def procesar_pedido_restaurante(request, pedido_id):
@@ -89,8 +91,7 @@ def ver_pedidos_restaurante(request):
     pedidos = Pedido.objects.filter(
         restaurante=restaurante,
         #estado='aceptado'
-        estado__in=['aceptado', 'preparando', 'entregado_repartidor', 'rechazado']
-    )
+        estado__in=['aceptado', 'preparando', 'entregado_repartidor', 'recibido', 'en_camino', 'entregado_cliente','rechazado',])
 
     return render( request, 'ver_pedidos_restaurante.html',
         { 'pedidos': pedidos }
@@ -121,13 +122,13 @@ def cambiar_estado_pedido(request, pedido_id):
         pedido.estado = nuevo_estado
         pedido.save()
 
-        if nuevo_estado == 'entregado_repartidor':
+        if nuevo_estado == 'preparando':
+            #pedido.save()
             repartidor = pedido.asignar_repartidor()
             if repartidor:
-                messages.success(request, f"Pedido #{pedido.id} enviado a repartidor: {repartidor.nombre}." )
+                messages.success(request, f"Pedido #{pedido.id} en preparación. Se le ha ofrecido al repartidor: {repartidor.nombre_usuario_repartidor}.")
             else:
-                messages.warning(request, f"Pedido #{pedido.id} listo, pero no hay repartidores disponibles.")
+                messages.warning(request, f"Pedido #{pedido.id} en preparación, pero no hay repartidores disponibles por el momento.")
         else:
             messages.success(request, f"Pedido #{pedido.id} actualizado a '{pedido.get_estado_display()}'.")
-
-    return redirect('ver_pedidos_restaurante')
+        return redirect('ver_pedidos_restaurante')

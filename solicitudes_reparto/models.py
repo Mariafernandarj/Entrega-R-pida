@@ -32,14 +32,16 @@ class Pedido(models.Model):
     pagado = models.BooleanField(default=False) #cambia a verdadero cuando se le da en aceptar desde pago tarjeta/transferencia
     
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_limite = models.DateTimeField(default=default_fecha_limite)
+    fecha_limite = models.DateTimeField(null=True, blank=True, default=default_fecha_limite)
 
     def esta_expirado(self):
+        if self.fecha_limite is None:
+            return False
         return timezone.now() > self.fecha_limite
 
     def asignar_repartidor(self):
         """Asigna el pedido al repartidor con menos pedidos activo"""
-        ESTADOS_ACTIVOS = ['entregado_repartidor', 'recibido', 'en_camino']
+        ESTADOS_ACTIVOS = ['preparando','entregado_repartidor', 'recibido', 'en_camino']
         repartidor = (Repartidor.objects.annotate(pedidos_activos=models.Count('pedido', filter=models.Q(pedido__estado__in=ESTADOS_ACTIVOS))).order_by('pedidos_activos').first())
         
         if repartidor:
@@ -55,23 +57,25 @@ class Pedido(models.Model):
 
     def reasignar(self):
         """Si el repartidor actual no aceptó en 3 min, busca otro"""
-        self.estado = 'expirado'  # marca el intento actual
         repartidor_anterior = self.repartidor
+        
         self.repartidor = None
-        self.estado = 'entregado_repartidor'
+        self.estado = 'preparando'
         self.save()
         
         # Busca nuevo repartidor excluyendo al anterior
         from solicitudes_reparto.models import Repartidor
-        ESTADOS_ACTIVOS = ['entregado_repartidor', 'recibido', 'en_camino']
+        ESTADOS_ACTIVOS = ['preparando', 'entregado_repartidor', 'recibido', 'en_camino']
         
-        repartidor = (Repartidor.objects.exclude(id=repartidor_anterior.id if repartidor_anterior else None).annotate(pedidos_activos=models.Count('pedido',filter=models.Q(pedido__estado__in=ESTADOS_ACTIVOS))).order_by('pedidos_activos').first())
+        nuevo_repartidor = Repartidor.objects.exclude(id=repartidor_anterior.id if repartidor_anterior else None).annotate(pedidos_activos=models.Count('pedido',filter=models.Q(pedido__estado__in=ESTADOS_ACTIVOS))).order_by('pedidos_activos').first()
         
-        if repartidor:
-            self.repartidor = repartidor
+        if nuevo_repartidor:
+            self.repartidor = nuevo_repartidor
             self.fecha_asignacion_repartidor = timezone.now()
             self.fecha_limite = timezone.now() + timedelta(minutes=3)
             self.save()
+            return True
+        return False #No hay más repartidores disponibles 
         
     class Meta:
         ordering = ['-fecha_creacion']
