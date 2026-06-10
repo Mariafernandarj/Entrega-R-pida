@@ -18,4 +18,9 @@ urlpatterns = [
         views.ver_pedidos_restaurante,
         name='ver_pedidos_restaurante'
     ),
+    path(
+        'cambiar_estado_pedido/<int:pedido_id>/',
+        views.cambiar_estado_pedido,
+        name='cambiar_estado_pedido'
+    ),
 ]

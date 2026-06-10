@@ -1,17 +1,91 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Mis Pedidos Asignados</h2>
 
-{% for pedido in pedidos %}
-  <div>
-    <p>Pedido #{{ pedido.id }} - {{ pedido.restaurante }}</p>
-    <p>Estado: {{ pedido.estado }}</p>
+<div class="page-content">
+
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+    <h2 style="font-family: var(--font-display); font-size: 24px; font-weight: 700;">Mis pedidos</h2>
+    <span class="badge badge-asignado">{{ pedidos|length }} activos</span>
   </div>
-{% empty %}
-  <p>No tienes pedidos asignados aún.</p>
+
+  {% if messages %}
+    <div class="messages-container" style="padding: 0; margin-bottom: 24px;">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+          <button class="alert-close" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% for pedido in pedidos %}
+    <div class="card" style="margin-bottom: 16px;">
+      
+      <div class="card-header" style="margin-bottom: 16px; align-items: flex-start;">
+        <div>
+          <h3 class="card-title">Pedido #{{ pedido.id }}</h3>
+          <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">{{ pedido.restaurante }}</p>
+        </div>
+        
+        <span class="badge 
+          {% if pedido.estado == 'aceptado' %}badge-asignado
+          {% elif pedido.estado == 'preparando' %}badge-pendiente
+          {% elif pedido.estado == 'rechazado' %}badge-cancelado
+          {% elif pedido.estado == 'entregado_repartidor' %}badge-en_camino
+          {% else %}badge-asignado{% endif %}">
+          {{ pedido.get_estado_display }}
+        </span>
+      </div>
+
+      <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+        <label>Cambiar estado:</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+
+          {% if pedido.estado != 'aceptado' %}
+          <form method="POST" action="{% url 'cambiar_estado_pedido' pedido.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="estado" value="aceptado">
+            <button type="submit" class="btn btn-ghost">Aceptado</button>
+          </form>
+          {% endif %}
+
+          {% if pedido.estado != 'preparando' %}
+          <form method="POST" action="{% url 'cambiar_estado_pedido' pedido.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="estado" value="preparando">
+            <button type="submit" class="btn btn-ghost">En preparación</button>
+          </form>
+          {% endif %}
+
+          {% if pedido.estado != 'entregado_repartidor' %}
+          <form method="POST" action="{% url 'cambiar_estado_pedido' pedido.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="estado" value="entregado_repartidor">
+            <button type="submit" class="btn btn-primary">Entregado a repartidor</button>
+          </form>
+          {% endif %}
+
+          {% if pedido.estado != 'rechazado' %}
+          <form method="POST" action="{% url 'cambiar_estado_pedido' pedido.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="estado" value="rechazado">
+            <button type="submit" class="btn btn-danger">Rechazado</button>
+          </form>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+    
+  {% empty %}
+    <div class="empty-state">
+      <div class="empty-state-icon">📦</div>
+      <h3>No tienes pedidos activos</h3>
+      <p>Cuando recibas nuevos pedidos, aparecerán aquí.</p>
+    </div>
   {% endfor %}
-{% for message in messages %}
-  <div class="alert alert-{{ message.tags }}">{{ message }}</div>
-{% endfor %}
+
+</div>
 
 {% endblock %}

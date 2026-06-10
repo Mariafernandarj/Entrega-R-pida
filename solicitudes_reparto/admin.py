@@ -14,3 +14,4 @@ class PedidoAdmin(admin.ModelAdmin):
 class RepartidorAdmin(admin.ModelAdmin):
     list_display = ('id', 'nombre', 'nombre_usuario_repartidor') 
     search_fields = ('nombre', 'user__username')
+
