@@ -42,7 +42,8 @@
                         <th style="padding: 15px; text-align: right;">Total</th>
                         {% if tipo_usuario == 'cliente' %}
                             <th style="padding: 15px; text-align: right;">Acciones</th>
-                        {% endif %}
+                            {% endif %}
+			 <th style="padding: 15px; text-align: right;">Detalles</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,7 +80,14 @@
                                         <span style="color: #666; font-size: 12px; font-style: italic;">No cancelable</span>
                                     {% endif %}
                                 </td>
-                            {% endif %}
+				{% endif %}
+
+			    <td style="padding: 15px; text-align: right;">
+			      <button onclick="abrirModal('{{ pedido.id }}')"
+				      style="background-color: #ff6600; color: white; padding: 6px 12px; border-radius: 4px; border: none; font-size: 12px; font-weight: bold; cursor: pointer;">
+				Ver detalles
+			      </button>
+			    </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -92,6 +100,38 @@
             Volver al Menú Principal
         </a>
     </div>
+
+    <!-- Modal -->
+    <div id="modal-detalles" onclick="cerrarModal(event)"
+	 style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+		background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center;">
+      
+      <div style="background:#1a1a1a; border:1px solid #333; border-radius:10px;
+                  padding:30px; min-width:400px; max-width:600px; position:relative;">
+        
+        <button onclick="document.getElementById('modal-detalles').style.display='none'"
+		style="position:absolute; top:10px; right:15px; background:none; border:none;
+                       color:#aaa; font-size:20px; cursor:pointer;">✕</button>
+        
+        <h3 style="color:#ff6600; margin-bottom:20px;">Detalles del Pedido #<span id="modal-pedido-id"></span></h3>
+        
+        <p style="color:#aaa; text-align:center; font-style:italic;">Información próximamente...</p>
+      </div>
+    </div>
+
+    <script>
+      function abrirModal(pedidoId) {
+          document.getElementById('modal-pedido-id').textContent = pedidoId;
+          document.getElementById('modal-detalles').style.display = 'flex';
+      }
+      function cerrarModal(event) {
+          // Cierra si hace click fuera del contenido
+          if (event.target.id === 'modal-detalles') {
+              event.target.style.display = 'none';
+          }
+      }
+    </script>
+
 
 </div>
 {% endblock %}
