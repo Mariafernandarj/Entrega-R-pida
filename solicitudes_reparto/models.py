@@ -83,6 +83,10 @@ class Pedido(models.Model):
 class Repartidor(models.Model):
     nombre_usuario_repartidor = models.CharField(max_length=150, unique=True, null=True, blank=True)
     nombre = models.CharField(max_length=100)
+    vehiculo  = models.CharField(max_length=150, blank=True, null=True)
+    placas    = models.CharField(max_length=20,  blank=True, null=True)
+    telefono  = models.CharField(max_length=10,  blank=True, null=True)
+    clabe     = models.CharField(max_length=18,  blank=True, null=True)
 
     def __str__(self):
         return self.nombre
