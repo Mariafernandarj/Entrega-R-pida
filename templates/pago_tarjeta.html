@@ -39,7 +39,7 @@
             <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px;">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <label style="width: 40%;">Número de Tarjeta:</label>
-                    <input type="text" maxlength="16" oninput="soloNumeros(this)" placeholder="16 dígitos..." style="width: 55%; padding: 10px; border-radius: 5px; border: 1px solid #444; background: #333; color: white;">
+                    <input type="text" name="tarjeta" maxlength="16" oninput="soloNumeros(this)" placeholder="16 dígitos..." value="{{ tarjeta_guardada|default_if_none:'' }}" style="width: 55%; padding: 10px; border-radius: 5px; border: 1px solid #444; background: #333; color: white;">
                 </div>
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <label style="width: 40%;">Nombre del Titular:</label>
