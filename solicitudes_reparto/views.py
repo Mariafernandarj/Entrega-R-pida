@@ -130,5 +130,36 @@ def cambiar_estado_repartidor(request, pedido_id):
 
     return redirect('ver_pedidos')
 
+def historial_entregados(request):
+    """Muestra el historial de pedidos que el repartidor ya entregó al cliente"""
+    
+    try:
+        cuenta = Usuario.objects.get(nombre_usuario=request.user.username)
+    except Usuario.DoesNotExist:
+        return redirect('iniciar_sesion')
+
+    if cuenta.tipo_usuario != 'repartidor':
+        messages.error(request, "Acceso denegado: Esta área es solo para repartidores.")
+        return redirect('principal_repartidor')
+        
+    # Obtener el perfil del repartidor
+    try:
+        repartidor = Repartidor.objects.get(nombre_usuario_repartidor=request.user.username)
+    except Repartidor.DoesNotExist:
+        messages.error(request, "No existe un perfil de repartidor asociado.")
+        return redirect('principal_repartidor')
+    
+    # Filtrar SOLO los pedidos con estado 'entregado_cliente'
+    # Usamos order_by('-id') para que los más recientes salgan arriba
+    pedidos_entregados = Pedido.objects.filter(
+        repartidor=repartidor,
+        estado='entregado_cliente'
+    ).order_by('-id')
+
+    # 🚨 AGREGA ESTA LÍNEA PARA DEBUGGEAR:
+    print("ESTADOS EN EL HISTORIAL:", [p.estado for p in pedidos_entregados])
+    
+    return render(request, 'historial_entregados.html', {'pedidos': pedidos_entregados})
+
 def test_base(request):
     return render(request, "test_base.html")

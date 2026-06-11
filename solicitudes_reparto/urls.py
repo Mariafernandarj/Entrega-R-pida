@@ -9,6 +9,6 @@ urlpatterns = [
     path('aceptar/<int:pedido_id>/', views.aceptar_solicitud, name='aceptar_solicitud'),
     path('logout/', views.ver_pedidos, name='logout'),
     path('cambiar_estado_repartidor/<int:pedido_id>/', views.cambiar_estado_repartidor, name='cambiar_estado_repartidor'),
-    
+    path('historial-entregados/', views.historial_entregados, name='historial_entregados'),
 ]
 

@@ -88,7 +88,7 @@
     {% endif %}
 
     <div style="margin-top: 30px; text-align: center;">
-        <a href="{% url 'pagina_principal' %}" style="background-color: transparent; border: 1px solid #555; color: #aaa; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.borderColor='#ff6600'; this.style.color='#fff'" onmouseout="this.style.borderColor='#555'; this.style.color='#aaa'">
+        <a href="{% if tipo_usuario == 'restaurante' %}{% url 'principal_restaurante' %}{% elif tipo_usuario == 'repartidor' %}{% url 'principal_repartidor' %}{% else %}{% url 'pagina_principal' %}{% endif %}" style="background-color: transparent; border: 1px solid #555; color: #aaa; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.borderColor='#ff6600'; this.style.color='#fff'" onmouseout="this.style.borderColor='#555'; this.style.color='#aaa'">
             Volver al Menú Principal
         </a>
     </div>
