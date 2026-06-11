@@ -113,25 +113,89 @@
 		style="position:absolute; top:10px; right:15px; background:none; border:none;
                        color:#aaa; font-size:20px; cursor:pointer;">✕</button>
         
-        <h3 style="color:#ff6600; margin-bottom:20px;">Detalles del Pedido #<span id="modal-pedido-id"></span></h3>
-        
-        <p style="color:#aaa; text-align:center; font-style:italic;">Información próximamente...</p>
+        <h3 style="color:#ff6600; margin-bottom:20px;">
+          Detalles del Pedido #<span id="modal-pedido-id"></span>
+        </h3>
+
+        <div id="modal-cargando" style="color:#aaa; text-align:center;">Cargando...</div>
+
+        <div id="modal-contenido" style="display:none;">
+          <div style="margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid #333;">
+            <p style="color:#aaa; margin:4px 0;">
+              <span style="color:#ff6600;">Cliente:</span> <span id="m-cliente"></span>
+            </p>
+            <p style="color:#aaa; margin:4px 0;">
+              <span style="color:#ff6600;">Dirección:</span> <span id="m-direccion"></span>
+            </p>
+            <p style="color:#aaa; margin:4px 0;">
+              <span style="color:#ff6600;">Teléfono:</span> <span id="m-telefono"></span>
+            </p>
+            <p style="color:#aaa; margin:4px 0;">
+              <span style="color:#ff6600;">Estado:</span> <span id="m-estado"></span>
+            </p>
+          </div>
+
+          <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+            <thead>
+              <tr style="color:#ff6600; border-bottom:1px solid #333;">
+                <th style="padding:8px; text-align:left;">Platillo</th>
+                <th style="padding:8px; text-align:center;">Cantidad</th>
+                <th style="padding:8px; text-align:right;">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="m-platillos"></tbody>
+          </table>
+
+          <p style="text-align:right; font-weight:bold; color:#4ade80;">
+            Total: $<span id="m-total"></span>
+          </p>
+        </div>
       </div>
     </div>
-
+   
     <script>
       function abrirModal(pedidoId) {
+          const modal = document.getElementById('modal-detalles');
+          const cargando = document.getElementById('modal-cargando');
+          const contenido = document.getElementById('modal-contenido');
+
           document.getElementById('modal-pedido-id').textContent = pedidoId;
-          document.getElementById('modal-detalles').style.display = 'flex';
+          cargando.style.display = 'block';
+          contenido.style.display = 'none';
+          modal.style.display = 'flex';
+
+          fetch(`/pedido/${pedidoId}/detalle/`)
+              .then(r => r.json())
+              .then(data => {
+                  document.getElementById('m-cliente').textContent   = data.cliente;
+                  document.getElementById('m-direccion').textContent = data.direccion;
+                  document.getElementById('m-telefono').textContent  = data.telefono;
+                  document.getElementById('m-estado').textContent    = data.estado;
+                  document.getElementById('m-total').textContent     = data.total;
+
+                  const tbody = document.getElementById('m-platillos');
+                  tbody.innerHTML = data.platillos.map(p => `
+                    <tr style="border-bottom:1px solid #262626; color:#ccc;">
+                        <td style="padding:8px;">${p.nombre}</td>
+                        <td style="padding:8px; text-align:center;">${p.cantidad}</td>
+                        <td style="padding:8px; text-align:right;">$${p.subtotal}</td>
+                    </tr>
+                `).join('');
+
+                  cargando.style.display = 'none';
+                  contenido.style.display = 'block';
+              })
+              .catch(() => {
+                  cargando.textContent = 'Error al cargar los detalles.';
+              });
       }
+
       function cerrarModal(event) {
-          // Cierra si hace click fuera del contenido
           if (event.target.id === 'modal-detalles') {
               event.target.style.display = 'none';
           }
       }
-    </script>
-
+      </script>
 
 </div>
 {% endblock %}

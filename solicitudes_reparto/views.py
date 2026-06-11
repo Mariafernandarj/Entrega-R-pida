@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Pedido, Repartidor
 from registrar_cuenta.models import Usuario
+from django.http import JsonResponse
+
 
 from django.shortcuts import render
 
@@ -156,10 +158,28 @@ def historial_entregados(request):
         estado='entregado_cliente'
     ).order_by('-id')
 
-    # 🚨 AGREGA ESTA LÍNEA PARA DEBUGGEAR:
+    # AGREGA ESTA LÍNEA PARA DEBUGGEAR:
     print("ESTADOS EN EL HISTORIAL:", [p.estado for p in pedidos_entregados])
     
     return render(request, 'historial_entregados.html', {'pedidos': pedidos_entregados})
 
-def test_base(request):
-    return render(request, "test_base.html")
+def detalle_pedido_modal(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    detalles = pedido.detalles.select_related('platillo').all()
+    
+    return JsonResponse({
+        'id': pedido.id,
+        'cliente': pedido.cliente.nombre_usuario,
+        'direccion': pedido.cliente.direccion or 'No especificada',
+        'telefono': pedido.cliente.telefono or 'No especificado',
+        'estado': pedido.get_estado_display(),
+        'total': str(pedido.total),
+        'platillos': [
+            {
+                'nombre': d.platillo.nombre,
+                'cantidad': d.cantidad,
+                'subtotal': str(d.subtotal),
+            }
+            for d in detalles
+        ]
+    })
