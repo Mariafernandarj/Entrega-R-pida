@@ -18,7 +18,7 @@ def _save_carrito(request, carrito):
 
 def _calcular_total(carrito):
     return sum(float(item['precio']) * item['cantidad'] for item in carrito.values())
-
+0
 
 # ─────────────────────────────────────────────
 #  VISTAS EXISTENTES (sin cambios)
@@ -122,6 +122,21 @@ def agregar_producto_carrito(request, id_platillo):
     carrito = _get_carrito(request)
     key = str(id_platillo)
 
+    # FLUJO ALTERNATIVO: solo se permite un restaurante por carrito
+    if carrito and key not in carrito:
+        primer_id = next(iter(carrito))
+        try:
+            primer_platillo = Platillo.objects.get(id=int(primer_id))
+            if primer_platillo.restaurante.id != platillo.restaurante.id:
+                messages.warning(
+                    request,
+                    f"Tu carrito ya tiene productos de '{primer_platillo.restaurante.nombre}'. "
+                    f"Solo puedes agregar productos del mismo restaurante."
+                )
+                return redirect('agregar_carrito')
+        except Platillo.DoesNotExist:
+            pass
+
     # FLUJO ALTERNATIVO A-2: límite de 100 productos distintos
     if key not in carrito and len(carrito) >= 100:
         messages.warning(request, "Has alcanzado el límite de 100 productos diferentes en tu carrito.")
@@ -217,3 +232,68 @@ def modificar_carrito(request):
 
     messages.warning(request, "Acción no reconocida.")
     return redirect('agregar_carrito')
+
+# ─────────────────────────────────────────────
+#  NUEVO: PAGAR DESDE EL CARRITO
+# ─────────────────────────────────────────────
+
+def pagar_carrito(request):
+    """
+    Convierte el carrito de la sesión en un Pedido real en la BD,
+    igual que hace adquirir_ahora, y redirige a pago_producto.
+    """
+    if not request.user.is_authenticated:
+        messages.error(request, "Debes iniciar sesión para pagar.")
+        return redirect('iniciar_sesion')
+
+    carrito = _get_carrito(request)
+
+    # FLUJO ALTERNATIVO: carrito vacío
+    if not carrito:
+        messages.warning(request, "Tu carrito está vacío.")
+        return redirect('agregar_carrito')
+
+    try:
+        cliente = Usuario.objects.get(nombre_usuario=request.user.username)
+    except Usuario.DoesNotExist:
+        messages.error(request, "No se encontró tu cuenta. Intenta iniciar sesión de nuevo.")
+        return redirect('iniciar_sesion')
+
+    total = _calcular_total(carrito)
+
+    # Tomar el restaurante del primer platillo del carrito
+    primer_id = next(iter(carrito))
+    try:
+        primer_platillo = Platillo.objects.get(id=int(primer_id))
+        restaurante = primer_platillo.restaurante
+    except Platillo.DoesNotExist:
+        messages.error(request, "Uno de los productos ya no existe. Por favor revisa tu carrito.")
+        return redirect('agregar_carrito')
+
+    # Crear el pedido
+    nuevo_pedido = Pedido.objects.create(
+        cliente=cliente,
+        restaurante=restaurante,
+        estado='pendiente',
+        total=total,
+    )
+
+    # Crear un DetallePedido por cada producto del carrito
+    for id_platillo, item in carrito.items():
+        try:
+            platillo = Platillo.objects.get(id=int(id_platillo))
+            subtotal = float(item['precio']) * item['cantidad']
+            DetallePedido.objects.create(
+                pedido=nuevo_pedido,
+                platillo=platillo,
+                cantidad=item['cantidad'],
+                subtotal=subtotal,
+            )
+        except Platillo.DoesNotExist:
+            continue  # Si un platillo ya no existe, lo ignoramos
+
+    # Limpiar el carrito de la sesión
+    _save_carrito(request, {})
+
+    messages.success(request, f"Pedido creado con éxito. Total: ${total:.2f}")
+    return redirect('pago_producto')
