@@ -42,7 +42,8 @@
                         <th style="padding: 15px; text-align: right;">Total</th>
                         {% if tipo_usuario == 'cliente' %}
                             <th style="padding: 15px; text-align: right;">Acciones</th>
-                        {% endif %}
+                            {% endif %}
+			 <th style="padding: 15px; text-align: right;">Detalles</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,7 +80,14 @@
                                         <span style="color: #666; font-size: 12px; font-style: italic;">No cancelable</span>
                                     {% endif %}
                                 </td>
-                            {% endif %}
+				{% endif %}
+
+			    <td style="padding: 15px; text-align: right;">
+			      <button onclick="abrirModal('{{ pedido.id }}')"
+				      style="background-color: #ff6600; color: white; padding: 6px 12px; border-radius: 4px; border: none; font-size: 12px; font-weight: bold; cursor: pointer;">
+				Ver detalles
+			      </button>
+			    </td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -88,10 +96,106 @@
     {% endif %}
 
     <div style="margin-top: 30px; text-align: center;">
-        <a href="{% url 'pagina_principal' %}" style="background-color: transparent; border: 1px solid #555; color: #aaa; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.borderColor='#ff6600'; this.style.color='#fff'" onmouseout="this.style.borderColor='#555'; this.style.color='#aaa'">
+        <a href="{% if tipo_usuario == 'restaurante' %}{% url 'principal_restaurante' %}{% elif tipo_usuario == 'repartidor' %}{% url 'principal_repartidor' %}{% else %}{% url 'pagina_principal' %}{% endif %}" style="background-color: transparent; border: 1px solid #555; color: #aaa; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.borderColor='#ff6600'; this.style.color='#fff'" onmouseout="this.style.borderColor='#555'; this.style.color='#aaa'">
             Volver al Menú Principal
         </a>
     </div>
+
+    <!-- Modal -->
+    <div id="modal-detalles" onclick="cerrarModal(event)"
+	 style="display:none; position:fixed; top:0; left:0; width:100%; height:100%;
+		background:rgba(0,0,0,0.7); z-index:1000; justify-content:center; align-items:center;">
+      
+      <div style="background:#1a1a1a; border:1px solid #333; border-radius:10px;
+                  padding:30px; min-width:400px; max-width:600px; position:relative;">
+        
+        <button onclick="document.getElementById('modal-detalles').style.display='none'"
+		style="position:absolute; top:10px; right:15px; background:none; border:none;
+                       color:#aaa; font-size:20px; cursor:pointer;">✕</button>
+        
+        <h3 style="color:#ff6600; margin-bottom:20px;">
+          Detalles del Pedido #<span id="modal-pedido-id"></span>
+        </h3>
+
+        <div id="modal-cargando" style="color:#aaa; text-align:center;">Cargando...</div>
+
+        <div id="modal-contenido" style="display:none;">
+          <div style="margin-bottom:15px; padding-bottom:15px; border-bottom:1px solid #333;">
+            <p style="color:#aaa; margin:4px 0;">
+              <span style="color:#ff6600;">Cliente:</span> <span id="m-cliente"></span>
+            </p>
+            <p style="color:#aaa; margin:4px 0;">
+              <span style="color:#ff6600;">Dirección:</span> <span id="m-direccion"></span>
+            </p>
+            <p style="color:#aaa; margin:4px 0;">
+              <span style="color:#ff6600;">Teléfono:</span> <span id="m-telefono"></span>
+            </p>
+            <p style="color:#aaa; margin:4px 0;">
+              <span style="color:#ff6600;">Estado:</span> <span id="m-estado"></span>
+            </p>
+          </div>
+
+          <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+            <thead>
+              <tr style="color:#ff6600; border-bottom:1px solid #333;">
+                <th style="padding:8px; text-align:left;">Platillo</th>
+                <th style="padding:8px; text-align:center;">Cantidad</th>
+                <th style="padding:8px; text-align:right;">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody id="m-platillos"></tbody>
+          </table>
+
+          <p style="text-align:right; font-weight:bold; color:#4ade80;">
+            Total: $<span id="m-total"></span>
+          </p>
+        </div>
+      </div>
+    </div>
+   
+    <script>
+      function abrirModal(pedidoId) {
+          const modal = document.getElementById('modal-detalles');
+          const cargando = document.getElementById('modal-cargando');
+          const contenido = document.getElementById('modal-contenido');
+
+          document.getElementById('modal-pedido-id').textContent = pedidoId;
+          cargando.style.display = 'block';
+          contenido.style.display = 'none';
+          modal.style.display = 'flex';
+
+          fetch(`/pedido/${pedidoId}/detalle/`)
+              .then(r => r.json())
+              .then(data => {
+                  document.getElementById('m-cliente').textContent   = data.cliente;
+                  document.getElementById('m-direccion').textContent = data.direccion;
+                  document.getElementById('m-telefono').textContent  = data.telefono;
+                  document.getElementById('m-estado').textContent    = data.estado;
+                  document.getElementById('m-total').textContent     = data.total;
+
+                  const tbody = document.getElementById('m-platillos');
+                  tbody.innerHTML = data.platillos.map(p => `
+                    <tr style="border-bottom:1px solid #262626; color:#ccc;">
+                        <td style="padding:8px;">${p.nombre}</td>
+                        <td style="padding:8px; text-align:center;">${p.cantidad}</td>
+                        <td style="padding:8px; text-align:right;">$${p.subtotal}</td>
+                    </tr>
+                `).join('');
+
+                  cargando.style.display = 'none';
+                  contenido.style.display = 'block';
+              })
+              .catch(() => {
+                  cargando.textContent = 'Error al cargar los detalles.';
+              });
+      }
+
+      function cerrarModal(event) {
+          if (event.target.id === 'modal-detalles') {
+              event.target.style.display = 'none';
+          }
+      }
+      </script>
 
 </div>
 {% endblock %}

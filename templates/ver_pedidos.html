@@ -1,62 +1,88 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div style="padding: 1rem 0;">
-  <p style="font-size:18px; font-weight:500; margin:0 0 1rem;">Mis entregas</p>
+<div class="page-content">
 
-  {% for message in messages %}
-    <div class="alert alert-{{ message.tags }}" style="margin-bottom:12px;">{{ message }}</div>
-  {% endfor %}
+  <div style="margin-bottom: 24px;">
+    <h2 style="font-family: var(--font-display); font-size: 24px; font-weight: 700;">Mis entregas</h2>
+  </div>
+
+  {% if messages %}
+    <div class="messages-container" style="padding: 0; margin-bottom: 24px;">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+          <button type="button" class="alert-close" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
   {% for pedido in pedidos %}
-  <div style="background:white; border:1px solid #e5e7eb; border-radius:12px; padding:1rem 1.25rem; margin-bottom:12px;">
+    <div class="card" style="margin-bottom: 16px;">
 
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
-      <div>
-        <p style="font-weight:500; font-size:15px; margin:0;">Pedido #{{ pedido.id }}</p>
-        <p style="font-size:13px; color:#6b7280; margin:4px 0 0;">{{ pedido.restaurante }}</p>
+      <div class="card-header" style="margin-bottom: 16px; align-items: flex-start;">
+        <div>
+          <h3 class="card-title">Pedido #{{ pedido.id }}</h3>
+          <p style="color: var(--text-muted); font-size: 13px; margin-top: 4px;">{{ pedido.restaurante }}</p>
+        </div>
+        
+        <span class="badge 
+          {% if pedido.estado == 'entregado_repartidor' %}badge-pendiente
+          {% elif pedido.estado == 'recibido' %}badge-asignado
+          {% elif pedido.estado == 'en_camino' %}badge-en_camino
+          {% elif pedido.estado == 'entregado_cliente' %}badge-entregado
+          {% else %}badge-asignado{% endif %}">
+          {{ pedido.get_estado_display }}
+        </span>
       </div>
-      <span style="font-size:12px; font-weight:500; padding:4px 10px; border-radius:8px;
-        {% if pedido.estado == 'entregado_repartidor' %}background:#FAEEDA; color:#633806;
-        {% elif pedido.estado == 'recibido' %}background:#E6F1FB; color:#0C447C;
-        {% elif pedido.estado == 'en_camino' %}background:#EAF3DE; color:#27500A;
-        {% elif pedido.estado == 'entregado_cliente' %}background:#E1F5EE; color:#085041;
-        {% endif %}">
-        {{ pedido.get_estado_display }}
-      </span>
-    </div>
 
-    <div style="border-top:1px solid #f3f4f6; padding-top:12px;">
-      <p style="font-size:12px; color:#9ca3af; margin:0 0 8px;">Actualizar estado:</p>
-      <div style="display:flex; flex-wrap:wrap; gap:8px;">
+      <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+        <label>Actualizar estado:</label>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
 
-        {% if pedido.estado != 'recibido' %}
-        <form method="POST" action="{% url 'cambiar_estado_repartidor' pedido.id %}">
-          {% csrf_token %}<input type="hidden" name="estado" value="recibido">
-          <button type="submit" style="font-size:13px; padding:6px 14px; border-radius:8px; border:1px solid #d1d5db; background:#f9fafb; cursor:pointer;">Recibido</button>
-        </form>
-        {% endif %}
+          {% if pedido.estado != 'recibido' %}
+          <form method="POST" action="{% url 'cambiar_estado_repartidor' pedido.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="estado" value="recibido">
+            <button type="submit" class="btn btn-ghost">Recibido</button>
+          </form>
+          {% endif %}
 
-        {% if pedido.estado != 'en_camino' %}
-        <form method="POST" action="{% url 'cambiar_estado_repartidor' pedido.id %}">
-          {% csrf_token %}<input type="hidden" name="estado" value="en_camino">
-          <button type="submit" style="font-size:13px; padding:6px 14px; border-radius:8px; border:1px solid #d1d5db; background:#f9fafb; cursor:pointer;">En camino</button>
-        </form>
-        {% endif %}
+          {% if pedido.estado != 'en_camino' %}
+          <form method="POST" action="{% url 'cambiar_estado_repartidor' pedido.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="estado" value="en_camino">
+            <button type="submit" class="btn btn-ghost">En camino</button>
+          </form>
+          {% endif %}
 
-        {% if pedido.estado != 'entregado_cliente' %}
-        <form method="POST" action="{% url 'cambiar_estado_repartidor' pedido.id %}">
-          {% csrf_token %}<input type="hidden" name="estado" value="entregado_cliente">
-          <button type="submit" style="font-size:13px; padding:6px 14px; border-radius:8px; border:1px solid #d1d5db; background:#f9fafb; cursor:pointer;">Entregado al cliente</button>
-        </form>
-        {% endif %}
+          {% if pedido.estado != 'entregado_cliente' %}
+          <form method="POST" action="{% url 'cambiar_estado_repartidor' pedido.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="estado" value="entregado_cliente">
+            <button type="submit" class="btn btn-primary">Entregado al cliente</button>
+          </form>
+          {% endif %}
 
+        </div>
       </div>
     </div>
-  </div>
+    
   {% empty %}
-    <p style="color:#9ca3af; text-align:center; padding:2rem;">No tienes entregas activas.</p>
-  {% endfor %}
+    <div class="empty-state">
+      <div class="empty-state-icon">🛵</div>
+      <h3>No tienes entregas activas</h3>
+      <p>Cuando te asignen un pedido para entregar, aparecerá aquí.</p>
+    </div>
+    {% endfor %}
+
+    <div style="margin-top: 30px; text-align: center;">
+      <a href="{% url 'principal_repartidor' %}" style="background-color: transparent; border: 1px solid #555; color: #aaa; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px; transition: 0.3s;" onmouseover="this.style.borderColor='#ff6600'; this.style.color='#fff'" onmouseout="this.style.borderColor='#555'; this.style.color='#aaa'">
+        Volver a página principal
+      </a>
+    </div>
+
 </div>
 
 {% endblock %}

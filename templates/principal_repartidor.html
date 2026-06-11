@@ -160,10 +160,10 @@
 /* ── Botones principales ─────────────────────────────────────────────── */
 .home-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
   width: 100%;
-  max-width: 560px;
+  max-width: 820px;
   animation: fadeUp 0.5s 0.1s ease both;
 }
 
@@ -198,6 +198,7 @@
 }
 .action-card:hover::before { opacity: 1; }
 
+/* Estilos Botón 1: Solicitudes */
 .action-card.solicitudes::before {
   background: linear-gradient(135deg, rgba(255,92,26,0.12), rgba(255,181,71,0.06));
 }
@@ -210,6 +211,7 @@
   color: var(--accent);
 }
 
+/* Estilos Botón 2: Ver pedidos */
 .action-card.ver-pedidos::before {
   background: linear-gradient(135deg, rgba(52,152,219,0.12), rgba(52,152,219,0.04));
 }
@@ -220,6 +222,32 @@
 .action-card.ver-pedidos .action-icon {
   background: rgba(52,152,219,0.15);
   color: var(--info);
+}
+
+/* Estilos Botón 3: Cambiar estado (NUEVO) */
+.action-card.cambiar-estado::before {
+  background: linear-gradient(135deg, rgba(46,204,113,0.12), rgba(39,174,96,0.04));
+}
+.action-card.cambiar-estado:hover {
+  border-color: rgba(46,204,113,0.3);
+  box-shadow: 0 16px 40px rgba(46,204,113,0.15);
+}
+.action-card.cambiar-estado .action-icon {
+  background: rgba(46,204,113,0.15);
+  color: #2ecc71; /* Verde */
+}
+
+/* Estilos Botón 4: Historial Entregas (NUEVO) */
+.action-card.historial-entregas::before {
+  background: linear-gradient(135deg, rgba(155,89,182,0.12), rgba(142,68,173,0.04));
+}
+.action-card.historial-entregas:hover {
+  border-color: rgba(155,89,182,0.3);
+  box-shadow: 0 16px 40px rgba(155,89,182,0.15);
+}
+.action-card.historial-entregas .action-icon {
+  background: rgba(155,89,182,0.15);
+  color: #9b59b6; /* Morado */
 }
 
 .action-icon {
@@ -315,6 +343,15 @@
 }
 .btn-drawer:hover { background: #2a2a2a; }
 .btn-drawer svg { width: 16px; height: 16px; }
+
+/* Ajustes de responsividad */
+@media (max-width: 850px) {
+  .home-actions {
+    grid-template-columns: 1fr 1fr; /* Pasa a 2 columnas en tablets */
+    max-width: 560px;
+  }
+  .topbar-container-fix { max-width: 560px; }
+}
 
 @media (max-width: 520px) {
   .home-actions {
@@ -449,24 +486,33 @@
       </div>
     </a>
 
+    <a href="{% url 'ver_pedidos' %}" class="action-card cambiar-estado">
+      <div class="action-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="action-label">Estado pedido</div>
+        <div class="action-sublabel">Actualizar estado</div>
+      </div>
+    </a>
+
+    <a href="{% url 'historial_entregados' %}" class="action-card historial-entregas">
+      <div class="action-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+        </svg>
+      </div>
+      <div>
+        <div class="action-label">Historial</div>
+        <div class="action-sublabel">Pedidos entregados</div>
+      </div>
+    </a>
+
   </div>
 
-  <div class="home-stats">
-    <div class="stat-item">
-      <div class="stat-value" id="statPendientes">—</div>
-      <div class="stat-label">Disponibles</div>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <div class="stat-value" id="statAceptados">—</div>
-      <div class="stat-label">Aceptados</div>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat-item">
-      <div class="stat-value" id="statEntregados">—</div>
-      <div class="stat-label">Entregados hoy</div>
-    </div>
-  </div>
 
 </div>
 
@@ -486,28 +532,5 @@
     if (e.key === 'Escape') cerrarDrawer();
   });
 
-  // Stats vía fetch
-  // Stats en duro temporalmente para evitar el error de NoReverseMatch
-  function cargarStats() {
-    // Definimos números de prueba directamente para que la interfaz no se vea vacía
-    const data = {
-      pendientes: 3,
-      aceptados: 1,
-      entregados: 5
-    };
-    
-    // Inyectamos los datos en las tarjetas del HTML
-    document.getElementById('statPendientes').textContent  = data.pendientes;
-    document.getElementById('statAceptados').textContent   = data.aceptados;
-    document.getElementById('statEntregados').textContent  = data.entregados;
-    document.getElementById('badgeSolicitudes').textContent = data.pendientes;
-    document.getElementById('badgePedidos').textContent     = data.aceptados;
-  }
-  cargarStats();
-  window.addEventListener('pageshow', function(event) {
-      if (event.persisted) {
-          window.location.reload();
-      }
-  });
 </script>
 {% endblock %}
