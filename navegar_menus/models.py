@@ -9,6 +9,8 @@ class Restaurante(models.Model):
     imagen = models.ImageField(upload_to='restaurantes/', blank=True, null=True)
     telefono = models.CharField(max_length=20, blank=True, null=True)
     contrasena = models.CharField(max_length=20, blank=True, null=True)
+    horario = models.CharField(max_length=50, blank=True, null=True)
+    clabe   = models.CharField(max_length=18, blank=True, null=True)
 
     def __str__(self):
         return self.nombre

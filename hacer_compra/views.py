@@ -69,7 +69,16 @@ def pago_tarjeta(request):
                 pedido_actual.save()
                 messages.success(request, "¡Pago exitoso con Tarjeta! Tu pedido está en preparación.")
                 return redirect('pagina_principal')
-            return render(request, 'pago_tarjeta.html', {'pedido': pedido_actual})
+             # NUEVO: leer tarjeta guardada del usuario
+            try:
+                usuario = Usuario.objects.get(nombre_usuario=request.user.username)
+                tarjeta_guardada = usuario.tarjeta
+            except Usuario.DoesNotExist:
+                tarjeta_guardada = None
+            return render(request, 'pago_tarjeta.html', {
+                'pedido': pedido_actual,
+                'tarjeta_guardada': tarjeta_guardada,  # NUEVO
+            })
     return redirect('pago_tarjeta.html')
 
 
