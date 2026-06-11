@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="padding: 20px; max-width: 500px; margin: auto;">
+    <h2>Tu Carrito de Compras</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="padding: 10px; margin-bottom: 10px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <button onclick="alert('Próximamente: Mi historial de pedidos.')"
+        style="padding: 10px; background: gray; color: white; border: none; cursor: pointer; margin-bottom: 15px;">
+        Mi historial
+    </button>
+
+    {% if carrito %}
+
+        <!-- Forms de eliminar FUERA del form principal -->
+        {% for id, item in carrito.items %}
+        <form id="form-eliminar-{{ id }}" method="POST" action="{% url 'modificar_carrito' %}" style="display:none;">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="eliminar">
+            <input type="hidden" name="id_platillo" value="{{ id }}">
+        </form>
+        {% endfor %}
+
+        <!-- Form principal de guardar -->
+        <form id="form-guardar" method="POST" action="{% url 'modificar_carrito' %}">
+            {% csrf_token %}
+            <input type="hidden" name="accion" value="guardar">
+            <ul style="list-style: none; padding: 0;">
+                {% for id, item in carrito.items %}
+                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+                    <span style="flex: 1;">{{ item.nombre }} - ${{ item.precio }}</span>
+                    <span>Cantidad:</span>
+                    <input type="number" name="cantidad_{{ id }}" value="{{ item.cantidad }}"
+                        min="0" max="100"
+                        style="width: 70px; padding: 4px 8px; text-align: center;"
+                        oninput="recalcular()">
+                    <button type="button" onclick="document.getElementById('form-eliminar-{{ id }}').submit()"
+                        style="background: red; color: white; border: none; cursor: pointer; padding: 4px 10px;">X</button>
+                </li>
+                {% endfor %}
+            </ul>
+            <h3 id="total-display">Total: ${{ total|floatformat:2 }}</h3>
+            <button type="submit" style="padding: 10px; background: green; color: white; border: none; cursor: pointer;">
+                Guardar cambios
+            </button>
+        </form>
+
+    {% else %}
+        <ul><li>No hay productos en el carrito.</li></ul>
+        <h3>Total: $0.00</h3>
+    {% endif %}
+
+    <a href="{% url 'pagina_principal' %}" style="padding: 10px; background: gray; color: white; text-decoration: none;">Seguir buscando</a>
+    <a href="{% url 'pagar_carrito' %}" style="padding: 10px; background: blue; color: white; text-decoration: none;">Ir a Pagar</a>
+</div>
+
+<script>
+  const precios = {
+    {% for id, item in carrito.items %}"{{ id }}": {{ item.precio }},{% endfor %}
+  };
+
+  function recalcular() {
+    let total = 0;
+    for (const [id, precio] of Object.entries(precios)) {
+      const input = document.querySelector(`input[name="cantidad_${id}"]`);
+      if (!input) continue;
+      let qty = Math.min(Math.max(parseInt(input.value) || 0, 0), 100);
+      input.value = qty;
+      total += precio * qty;
+    }
+    const totalEl = document.getElementById('total-display');
+    if (totalEl) totalEl.textContent = `Total: $${total.toFixed(2)}`;
+  }
+
+  document.addEventListener('DOMContentLoaded', recalcular);
+</script>
+{% endblock %}

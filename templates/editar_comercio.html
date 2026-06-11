@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="padding: 20px; max-width: 500px; margin: auto;">
+    <h2>Editar Información del Comercio</h2>
+    
+    <!-- mensajes de error o advertencia de los flujos excepcionales -->
+    {% if messages %}
+        {% for message in messages %}
+            <div style="background-color: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 15px; border: 1px solid #f5c6cb;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" action="{% url 'editar_comercio' %}">
+        {% csrf_token %}
+        <label>Nombre del Restaurante:</label><br>
+        <input type="text" name="nombre" value="{{ restaurante.nombre }}" style="margin-bottom: 10px; width: 100%;"><br>
+        
+        <label>Dirección:</label><br>
+        <input type="text" name="direccion" value="{{ restaurante.direccion }}" style="margin-bottom: 10px; width: 100%;"><br>
+        
+        <label>Teléfono:</label><br>
+        <input type="text" name="telefono" id="telefono" maxlength="10" value="{{ restaurante.telefono|default_if_none:'' }}" style="margin-bottom: 20px; width: 100%;"><br>
+
+        <label>Contraseña:</label><br>
+        <input type="text" name="contrasena" value="{{ restaurante.contrasena }}" style="margin-bottom: 20px; width: 100%;"><br>
+
+        <!-- Botones -->
+        <button type="submit" style="padding: 10px; background: green; color: white; border: none; cursor: pointer;">Guardar Datos</button>
+        <a href="{% url 'perfil_comercio' %}" style="margin-left: 10px; color: red; text-decoration: none;">Cancelar</a>
+    </form>
+    
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      // para el telefono
+      const inputTelefono = document.getElementById('telefono');
+      
+      if (inputTelefono) {
+          // lee lo que teclee el ususario
+          inputTelefono.addEventListener('input', function(e) {
+              // borra cualquiercosa que no sea un numero
+              let valorLimpio = this.value.replace(/\D/g, '');
+              
+              // si escribe mas de 10 numeros se corta
+              if (valorLimpio.length > 10) {
+                  valorLimpio = valorLimpio.slice(0, 10);
+              }
+              
+              // se devuelve el valor limpio a la pantalla
+              this.value = valorLimpio;
+          });
+      }
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="/static/css/navegar_menus.css">
+
+<div class="topbar">
+    <div class="logo">😊</div>
+    
+    <!--Dejarlo o quitarle la barra de navegacion en modo pago???-->
+    <div class="busqueda">
+        <form method="GET" action="{% url 'busqueda_platillo' %}" style="width: 100%; display: flex;">
+            <input type="text" name="q" placeholder="Busca comida o restaurantes y presiona Enter">
+        </form>
+    </div>
+
+    <div class="topbar-icons">
+        <div class="user-menu-wrapper">
+            <span id="userIcon" onclick="toggleMenu()" style="cursor:pointer;">👤</span>
+            <div class="user-dropdown" id="userDropdown">
+                <a href="{% url 'perfil_comercio' %}">Editar Datos</a>
+                <a href="#" class="cerrar-sesion">Cerrar Sesión</a>
+            </div>
+        </div>
+        <span>🛒</span>
+    </div>
+</div>
+
+<div style="background-color: #111111; color: #ffffff; min-height: 80vh; padding: 100px 20px 40px 20px; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center;">
+
+    <div style="background-color: #1c1c1c; width: 100%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); padding: 40px 30px; position: relative;">
+
+        <h2 style="text-align: center; color: #ffffff; margin-bottom: 40px; font-weight: normal; font-size: 28px;">
+            Selecciona tu forma de pago
+        </h2>
+
+        <div style="display: flex; flex-direction: column; gap: 20px; max-width: 300px; margin: 0 auto 60px auto;">
+            <a href="{% url 'pago_tarjeta' %}" style="background-color: #ff6600; color: white; padding: 15px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold; transition: 0.3s;">
+                Tarjeta
+            </a>
+            <a href="{% url 'pago_transferencia' %}" style="background-color: #ff6600; color: white; padding: 15px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold; transition: 0.3s;">
+                Transferencia
+            </a>
+            <a href="#" style="background-color: #ff6600; color: white; padding: 15px; text-align: center; text-decoration: none; border-radius: 8px; font-size: 18px; font-weight: bold; transition: 0.3s;">
+                Efectivo
+            </a>
+        </div>
+
+        <div style="text-align: right; margin-top: 20px;">
+            <a href="javascript:history.back()" style="color: #ff6600; text-decoration: none; font-size: 16px;">← Regresar</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleMenu() {
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('click', function(e) {
+        const wrapper = document.querySelector('.user-menu-wrapper');
+        if (wrapper && !wrapper.contains(e.target)) {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) dropdown.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}

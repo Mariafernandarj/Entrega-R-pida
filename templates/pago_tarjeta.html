@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %}
+<link rel="stylesheet" href="/static/css/navegar_menus.css">
+
+<div class="topbar">
+    <div class="logo">😊</div>
+    <div class="busqueda">
+        <form method="GET" action="{% url 'busqueda_platillo' %}" style="width: 100%; display: flex;">
+            <input type="text" name="q" placeholder="Busca comida o restaurantes y presiona Enter">
+        </form>
+    </div>
+    <div class="topbar-icons">
+        <div class="user-menu-wrapper">
+            <span id="userIcon" onclick="toggleMenu()" style="cursor:pointer;">👤</span>
+            <div class="user-dropdown" id="userDropdown">
+                <a href="{% url 'perfil_comercio' %}">Editar Datos</a>
+                <a href="#" class="cerrar-sesion">Cerrar Sesión</a>
+            </div>
+        </div>
+        <span>🛒</span>
+    </div>
+</div>
+
+<div style="background-color: #111111; color: #ffffff; min-height: 80vh; padding: 100px 20px 40px 20px; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center;">
+    
+    <div style="background-color: #1c1c1c; width: 100%; max-width: 600px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); padding: 40px 30px; position: relative;">
+        
+        <h2 style="text-align: center; color: #ffffff; margin-bottom: 30px; font-weight: normal; font-size: 28px;">
+            Pago por tarjeta
+        </h2>
+
+        <p style="font-size: 18px; margin-bottom: 30px;">
+            Cargo: <strong style="color: #ff6600;">{{ pedido.platillo.nombre|default:"Cargando platillo..." }}</strong>
+        </p>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 40px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <label style="width: 40%;">Número de Tarjeta:</label>
+                    <input type="text" name="tarjeta" maxlength="16" oninput="soloNumeros(this)" placeholder="16 dígitos..." value="{{ tarjeta_guardada|default_if_none:'' }}" style="width: 55%; padding: 10px; border-radius: 5px; border: 1px solid #444; background: #333; color: white;">
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <label style="width: 40%;">Nombre del Titular:</label>
+                    <input type="text" oninput="formatearNombre(this)" placeholder="NOMBRE..." style="width: 55%; padding: 10px; border-radius: 5px; border: 1px solid #444; background: #333; color: white;">
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <label style="width: 40%;">Fecha de vencimiento:</label>
+                    <input type="text" maxlength="5" oninput="formatearFecha(this)" placeholder="MM/AA" style="width: 55%; padding: 10px; border-radius: 5px; border: 1px solid #444; background: #333; color: white; text-align: center;">
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <label style="width: 40%;">Código de seguridad:</label>
+                    <input type="text" maxlength="3" oninput="soloNumeros(this)" placeholder="CVV/CVC" style="width: 55%; padding: 10px; border-radius: 5px; border: 1px solid #444; background: #333; color: white; text-align: center;">
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: center; gap: 20px;">
+                <a href="{% url 'pago_producto' %}" style="background-color: transparent; border: 1px solid #ff6600; color: #ff6600; padding: 12px 30px; text-align: center; text-decoration: none; border-radius: 5px; font-weight: bold; width: 40%;">Cancelar</a>
+                <button type="submit" style="background-color: #ff6600; color: white; border: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 40%;">Aceptar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function toggleMenu() {
+        const dropdown = document.getElementById('userDropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // 1. Elimina cualquier letra o símbolo, dejando solo números
+    function soloNumeros(input) {
+        input.value = input.value.replace(/[^0-9]/g, '');
+    }
+
+    // 2. Quita acentos, elimina números/símbolos y pasa todo a Mayúsculas
+    function formatearNombre(input) {
+        let texto = input.value;
+        texto = texto.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quita acentos (Ej. á -> a)
+        texto = texto.replace(/[^a-zA-Z\s]/g, ""); // Borra todo lo que no sea letra o espacio
+        input.value = texto.toUpperCase(); // Lo transforma a mayúsculas
+    }
+
+    // 3. Da formato automático a la fecha MM/AA
+    function formatearFecha(input) {
+        let texto = input.value.replace(/[^0-9]/g, ''); // Primero saca solo los números
+        if (texto.length >= 3) {
+            // Si ya escribió 3 o más números, mete la diagonal en medio
+            texto = texto.substring(0, 2) + '/' + texto.substring(2, 4);
+        }
+        input.value = texto;
+    }
+</script>
+{% endblock %}
