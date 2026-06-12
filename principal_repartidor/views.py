@@ -10,7 +10,7 @@ def principal_repartidor(request):
         cuenta = Usuario.objects.get(nombre_usuario=request.user.username)
         if cuenta.tipo_usuario != 'repartidor':
             messages.error( request, 'Acceso denegado: esta área es solo para repartidores.' )
-            return redirect('inicio')
+            return redirect('inicio_sesion')
         #Crear perfil de repartidor si no existe
         Repartidor.objects.get_or_create(
             nombre_usuario_repartidor=request.user.username,

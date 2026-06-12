@@ -19,7 +19,8 @@
                 </button>
             </form>
 
-            <a href="{% url 'agregar_carrito' %}" style="padding: 12px 24px; background-color: transparent; color: #ff6600; border: 1px solid #ff6600; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center;">
+            <!-- CAMBIO: ahora llama a agregar_producto_carrito con el id del platillo -->
+            <a href="{% url 'agregar_producto_carrito' platillo.id %}" style="padding: 12px 24px; background-color: transparent; color: #ff6600; border: 1px solid #ff6600; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 14px; text-align: center;">
                 Agregar al 🛒
             </a>
         </div>

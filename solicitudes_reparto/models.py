@@ -22,7 +22,7 @@ class Pedido(models.Model):
         ('expirado', 'Expirado'),
     ]
 
-    cliente = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pedidos_cliente')
+    cliente = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pedidos', )
     restaurante = models.ForeignKey('navegar_menus.Restaurante', on_delete=models.CASCADE)
     repartidor = models.ForeignKey('Repartidor', null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -32,37 +32,61 @@ class Pedido(models.Model):
     pagado = models.BooleanField(default=False) #cambia a verdadero cuando se le da en aceptar desde pago tarjeta/transferencia
     
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_limite = models.DateTimeField(default=default_fecha_limite)
+    fecha_limite = models.DateTimeField(null=True, blank=True, default=default_fecha_limite)
 
     def esta_expirado(self):
+        if self.fecha_limite is None:
+            return False
         return timezone.now() > self.fecha_limite
+
+    def asignar_repartidor(self):
+        """Asigna el pedido al repartidor con menos pedidos activo"""
+        ESTADOS_ACTIVOS = ['preparando','entregado_repartidor', 'recibido', 'en_camino']
+        repartidor = (Repartidor.objects.annotate(pedidos_activos=models.Count('pedido', filter=models.Q(pedido__estado__in=ESTADOS_ACTIVOS))).order_by('pedidos_activos').first())
+        
+        if repartidor:
+            self.repartidor = repartidor
+            self.fecha_asignacion_repartidor = timezone.now()
+            self.fecha_limite = timezone.now() + timedelta(minutes=3)
+            self.save()
+            return repartidor
+        return None
     
     def __str__(self):
         return f"Pedido #{self.id} - {self.estado}"
 
     def reasignar(self):
-        from django.db.models import Count, Q
-        nuevo_repartidor = Repartidor.objects.exclude(
-            id=self.repartidor.id 
-        ).annotate(
-            pedidos_activos=Count('pedido',filter=Q(pedido__estado='aceptado'))
-        ).order_by('pedidos_activos').first()
-
+        """Si el repartidor actual no aceptó en 3 min, busca otro"""
+        repartidor_anterior = self.repartidor
+        
+        self.repartidor = None
+        self.estado = 'preparando'
+        self.save()
+        
+        # Busca nuevo repartidor excluyendo al anterior
+        from solicitudes_reparto.models import Repartidor
+        ESTADOS_ACTIVOS = ['preparando', 'entregado_repartidor', 'recibido', 'en_camino']
+        
+        nuevo_repartidor = Repartidor.objects.exclude(id=repartidor_anterior.id if repartidor_anterior else None).annotate(pedidos_activos=models.Count('pedido',filter=models.Q(pedido__estado__in=ESTADOS_ACTIVOS))).order_by('pedidos_activos').first()
+        
         if nuevo_repartidor:
             self.repartidor = nuevo_repartidor
-            self.estado = 'pendiente' 
+            self.fecha_asignacion_repartidor = timezone.now()
+            self.fecha_limite = timezone.now() + timedelta(minutes=3)
             self.save()
             return True
-        return False 
+        return False #No hay más repartidores disponibles 
         
     class Meta:
         ordering = ['-fecha_creacion']
     
 class Repartidor(models.Model):
-    #user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # Reemplazamos el OneToOneField por un campo de texto para mantener el vínculo lógico con Usuario
     nombre_usuario_repartidor = models.CharField(max_length=150, unique=True, null=True, blank=True)
     nombre = models.CharField(max_length=100)
+    vehiculo  = models.CharField(max_length=150, blank=True, null=True)
+    placas    = models.CharField(max_length=20,  blank=True, null=True)
+    telefono  = models.CharField(max_length=10,  blank=True, null=True)
+    clabe     = models.CharField(max_length=18,  blank=True, null=True)
 
     def __str__(self):
         return self.nombre
@@ -84,3 +108,11 @@ class DetallePedido(models.Model):
     
     def __str__(self):
         return f"{self.cantidad}x {self.platillo.nombre} (Pedido #{self.pedido.id})"
+
+
+#class Cliente(models.Model):
+    # Esto vincula al cliente directamente con su cuenta de acceso
+    #usuario = models.OneToOneField(Usuario, on_delete=models.CASCADE, related_name='perfil_cliente')
+
+    #def __str__(self):
+       # return f"Cliente: {self.usuario.nombre_usuario}"
