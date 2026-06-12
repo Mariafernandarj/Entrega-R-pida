@@ -11,10 +11,10 @@
         {% endfor %}
     {% endif %}
 
-    <button onclick="alert('Próximamente: Mi historial de pedidos.')"
-        style="padding: 10px; background: gray; color: white; border: none; cursor: pointer; margin-bottom: 15px;">
+    <a href="{% url 'historial_pedidos' %}" 
+    style="padding: 10px; background: #3b82f6; color: white; border: none; cursor: pointer; margin-bottom: 15px; text-decoration: none; display: inline-block; border-radius: 4px; text-align: center;">
         Mi historial
-    </button>
+    </a>
 
     {% if carrito %}
 
