@@ -117,9 +117,8 @@ def cambiar_estado_pedido(request, pedido_id):
         TRANSICIONES = {
             'pendiente':             ['aceptado', 'rechazado'],
             'aceptado':              ['preparando'],
-            'preparando':            ['entregado_repartidor'],
-            # Cuando el repartidor acepta (recibido), el restaurante aún puede marcar entregado_cliente
-            'recibido':              ['entregado_cliente'],
+            'preparando':            [],
+            'recibido':              ['entregado_repartidor','entregado_cliente'],
             'en_camino':             ['entregado_cliente'],
         }
 
