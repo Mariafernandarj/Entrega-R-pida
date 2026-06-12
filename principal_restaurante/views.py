@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.views.decorators.cache import never_cache
 from registrar_cuenta.models import Usuario
 from navegar_menus.models import Restaurante, Platillo
 
+@never_cache
 def principal_restaurante(request):
     if not request.user.is_authenticated:
         return redirect('iniciar_sesion')

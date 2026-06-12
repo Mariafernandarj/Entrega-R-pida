@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.views.decorators.cache import never_cache
 from registrar_cuenta.models import Usuario
 from solicitudes_reparto.models import Repartidor
 
+@never_cache
 def principal_repartidor(request):
     if not request.user.is_authenticated:
         return redirect('iniciar_sesion')
