@@ -111,13 +111,20 @@ def cambiar_estado_pedido(request, pedido_id):
             messages.error(request, "No tienes permiso para modificar este pedido.")
             return redirect('solicitudes_restaurante')
 
-        # Estados que el restaurante puede asignar
-        ESTADOS_PERMITIDOS = ['aceptado', 'rechazado', 'preparando', 'entregado_repartidor']
-
         nuevo_estado = request.POST.get('estado')
 
-        if nuevo_estado not in ESTADOS_PERMITIDOS:
-            messages.error(request, "Estado no válido.")
+        # Transiciones válidas por estado actual (perspectiva restaurante)
+        TRANSICIONES = {
+            'pendiente':             ['aceptado', 'rechazado'],
+            'aceptado':              ['preparando'],
+            'preparando':            [],
+            'recibido':              ['entregado_repartidor','entregado_cliente'],
+            'en_camino':             ['entregado_cliente'],
+        }
+
+        transiciones_permitidas = TRANSICIONES.get(pedido.estado, [])
+        if nuevo_estado not in transiciones_permitidas:
+            messages.error(request, f"No puedes cambiar de '{pedido.get_estado_display()}' a '{nuevo_estado}'.")
             return redirect('ver_pedidos_restaurante')
         pedido.estado = nuevo_estado
         pedido.save()
