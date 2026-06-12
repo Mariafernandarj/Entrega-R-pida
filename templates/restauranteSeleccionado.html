@@ -39,7 +39,7 @@
         
         <div style="display: flex; gap: 20px; flex-wrap: wrap;">
             {% for platillo in platillos %}
-                <div onclick="window.location.href='{% url 'busqueda_platillo' %}?q={{ platillo.nombre }}'" style="background-color: #1c1c1c; padding: 20px; border-radius: 12px; border: 1px solid #333; width: calc(50% - 10px); cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='#ff6600'" onmouseout="this.style.borderColor='#333'">
+                <div onclick="{% if not platillo.agotado %}window.location.href='{% url 'busqueda_platillo' %}?q={{ platillo.nombre }}'{% endif %}" style="background-color: #1c1c1c; padding: 20px; border-radius: 12px; border: 1px solid #333; width: calc(50% - 10px); cursor: {% if platillo.agotado %}default{% else %}pointer{% endif %}; transition: all 0.3s; {% if platillo.agotado %}opacity: 0.5;{% endif %}" onmouseover="{% if not platillo.agotado %}this.style.borderColor='#ff6600'{% endif %}" onmouseout="{% if not platillo.agotado %}this.style.borderColor='#333'{% endif %}">
                     <h3 style="margin: 0 0 5px 0; font-size: 18px; color: white;">{{ platillo.nombre }}</h3>
                     <p style="margin: 0 0 10px 0; color: #ff6600; font-weight: bold;">${{ platillo.precio }}</p>
                     <p style="margin: 0; color: #888; font-size: 14px;">{{ platillo.descripcion|truncatewords:8 }}</p>
