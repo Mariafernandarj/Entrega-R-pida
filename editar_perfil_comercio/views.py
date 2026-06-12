@@ -43,17 +43,17 @@ def editar_perfil(request):
         otros_restaurantes = Restaurante.objects.exclude(nombre=restaurante_actual.nombre)
         
         #se revisa si haya algun restaurante con la direccion nueva
-        if otros_restaurantes.filter(direccion=nueva_direccion).exists():
+        if nueva_direccion and otros_restaurantes.filter(direccion=nueva_direccion).exists():
             messages.warning(request, "La dirección ya está registrada en otro comercio. Por favor ingresa una diferente.")
             return render(request, 'editar_comercio.html', contexto)
         
         #se revisa si haya algun restaurante con el telefono nuevo
-        if otros_restaurantes.filter(telefono=nuevo_telefono).exists():
+        if nuevo_telefono and otros_restaurantes.filter(telefono=nuevo_telefono).exists():
             messages.warning(request, "El teléfono ya está registrado en otro comercio. Por favor ingresa uno diferente.")
             return render(request, 'editar_comercio.html', contexto)
         
         #se revisa si haya algun restaurante con la nueva contraseña
-        if otros_restaurantes.filter(contrasena=nueva_contrasena).exists():
+        if nueva_contrasena and otros_restaurantes.filter(contrasena=nueva_contrasena).exists():
             messages.warning(request, "La contraseña ya está registrada en otro comercio. Por favor ingresa una diferente.")
             return render(request, 'editar_comercio.html', contexto)
             
@@ -63,6 +63,9 @@ def editar_perfil(request):
             restaurante_actual.direccion = nueva_direccion
             restaurante_actual.telefono = nuevo_telefono
             restaurante_actual.contrasena = nueva_contrasena
+            nueva_imagen = request.FILES.get('imagen')
+            if nueva_imagen:
+                restaurante_actual.imagen = nueva_imagen
             restaurante_actual.save()
 
         #se actualiza la tabla general de usuarios, si se csmbis nombre o contraseña en editar perfilm entonces se actualiza para iniciar sesion
