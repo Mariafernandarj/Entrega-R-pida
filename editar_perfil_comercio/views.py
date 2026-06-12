@@ -65,6 +65,16 @@ def editar_perfil(request):
                 restaurante_actual.imagen = nueva_imagen
             restaurante_actual.save()
 
+        # NUEVO: sincronizar con la tabla Usuario (registrar_cuenta), igual que
+        # editar_cliente/editar_repartidor, para que el login no "resetee" la
+        # contraseña a la vieja al usar el mecanismo de auto-sincronización
+        usuario_tecnico = Usuario.objects.filter(nombre_usuario=request.user.username).first()
+        if usuario_tecnico:
+            usuario_tecnico.nombre_usuario = nuevo_nombre
+            if nueva_contrasena:
+                usuario_tecnico.contrasena = nueva_contrasena
+            usuario_tecnico.save()
+
         #se actualiza la tabla general de usuarios, si se csmbis nombre o contraseña en editar perfilm entonces se actualiza para iniciar sesion
         user = request.user
         user.username = nuevo_nombre
