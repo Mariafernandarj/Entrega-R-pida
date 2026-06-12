@@ -76,6 +76,8 @@
                                         <a href="{% url 'cancelar_mi_pedido' pedido.id %}" style="background-color: #ef4444; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; font-weight: bold; transition: 0.3s;" onmouseover="this.style.backgroundColor='#dc2626'" onmouseout="this.style.backgroundColor='#ef4444'">
                                             Cancelar
                                         </a>
+                                    {% elif pedido.estado|lower == 'cancelado' %}
+                                        <span style="color: #ef4444; font-size: 12px; font-weight: bold;">Cancelado</span>
                                     {% else %}
                                         <span style="color: #666; font-size: 12px; font-style: italic;">No cancelable</span>
                                     {% endif %}
