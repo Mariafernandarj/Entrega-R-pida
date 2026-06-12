@@ -23,8 +23,8 @@
             <label>Teléfono:</label><br>
             <input type="text" name="telefono" id="telefono" maxlength="10" value="{{ restaurante.telefono|default_if_none:'' }}" style="margin-bottom: 20px; width: 100%;"><br>
 
-            <label>Contraseña:</label><br>
-            <input type="text" name="contrasena" value="{{ restaurante.contrasena }}" style="margin-bottom: 20px; width: 100%;"><br>
+            <label>Nueva Contraseña (dejar en blanco para no cambiarla):</label><br>
+<input type="password" name="contrasena" value="" placeholder="••••••••" style="margin-bottom: 20px; width: 100%;"><br>
 
         <label>Foto del restaurante:</label><br>
 {% if restaurante.imagen %}
