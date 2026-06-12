@@ -20,4 +20,5 @@ urlpatterns = [
     path('', include('consultar_historial_pedidos.urls')),
     path('pedidos/', include('consultar_historial_pedidos.urls')),
     path('cancelar/', include('cancelar_pedido.urls')),
+    path('api/restaurante/', include('recibir_pedidos.urls')),
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
