@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.views.decorators.cache import never_cache
 from registrar_cuenta.models import Usuario
 from navegar_menus.models import Restaurante, Platillo
 
+@never_cache
 def principal_restaurante(request):
     if not request.user.is_authenticated:
         return redirect('iniciar_sesion')
@@ -71,6 +73,7 @@ def agregar_platillo(request):
         nombre     = request.POST.get('nombre', '').strip()
         descripcion = request.POST.get('descripcion', '').strip()
         precio     = request.POST.get('precio', '').strip()
+        imagen      = request.FILES.get('imagen')
 
         # FLUJO ALTERNATIVO A-1: campos obligatorios vacíos
         if not nombre or not precio:
@@ -94,6 +97,7 @@ def agregar_platillo(request):
                 descripcion=descripcion,
                 precio=precio_decimal,
                 agotado=False,
+                imagen=imagen,
             )
             messages.success(request, f'Producto "{nombre}" agregado correctamente.')
         except Exception:
@@ -140,6 +144,9 @@ def editar_platillo(request, platillo_id):
             platillo.nombre      = nombre
             platillo.descripcion = descripcion
             platillo.precio      = precio_decimal
+            nueva_imagen = request.FILES.get('imagen')
+            if nueva_imagen:
+                platillo.imagen = nueva_imagen
             platillo.save()
             messages.success(request, f'Cambios guardados con éxito para "{platillo.nombre}".')
         except Exception:

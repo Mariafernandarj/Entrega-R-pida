@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Pedido, Repartidor
 from registrar_cuenta.models import Usuario
+from django.http import JsonResponse
+
 
 from django.shortcuts import render
 
@@ -130,5 +132,54 @@ def cambiar_estado_repartidor(request, pedido_id):
 
     return redirect('ver_pedidos')
 
-def test_base(request):
-    return render(request, "test_base.html")
+def historial_entregados(request):
+    """Muestra el historial de pedidos que el repartidor ya entregó al cliente"""
+    
+    try:
+        cuenta = Usuario.objects.get(nombre_usuario=request.user.username)
+    except Usuario.DoesNotExist:
+        return redirect('iniciar_sesion')
+
+    if cuenta.tipo_usuario != 'repartidor':
+        messages.error(request, "Acceso denegado: Esta área es solo para repartidores.")
+        return redirect('principal_repartidor')
+        
+    # Obtener el perfil del repartidor
+    try:
+        repartidor = Repartidor.objects.get(nombre_usuario_repartidor=request.user.username)
+    except Repartidor.DoesNotExist:
+        messages.error(request, "No existe un perfil de repartidor asociado.")
+        return redirect('principal_repartidor')
+    
+    # Filtrar SOLO los pedidos con estado 'entregado_cliente'
+    # Usamos order_by('-id') para que los más recientes salgan arriba
+    pedidos_entregados = Pedido.objects.filter(
+        repartidor=repartidor,
+        estado='entregado_cliente'
+    ).order_by('-id')
+
+    # AGREGA ESTA LÍNEA PARA DEBUGGEAR:
+    print("ESTADOS EN EL HISTORIAL:", [p.estado for p in pedidos_entregados])
+    
+    return render(request, 'historial_entregados.html', {'pedidos': pedidos_entregados})
+
+def detalle_pedido_modal(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    detalles = pedido.detalles.select_related('platillo').all()
+    
+    return JsonResponse({
+        'id': pedido.id,
+        'cliente': pedido.cliente.nombre_usuario,
+        'direccion': pedido.cliente.direccion or 'No especificada',
+        'telefono': pedido.cliente.telefono or 'No especificado',
+        'estado': pedido.get_estado_display(),
+        'total': str(pedido.total),
+        'platillos': [
+            {
+                'nombre': d.platillo.nombre,
+                'cantidad': d.cantidad,
+                'subtotal': str(d.subtotal),
+            }
+            for d in detalles
+        ]
+    })

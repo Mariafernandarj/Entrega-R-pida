@@ -12,19 +12,25 @@
         {% endfor %}
     {% endif %}
 
-    <form method="POST" action="{% url 'editar_comercio' %}">
+    <form method="POST" action="{% url 'editar_comercio' %}" enctype="multipart/form-data">
         {% csrf_token %}
-        <label>Nombre del Restaurante:</label><br>
-        <input type="text" name="nombre" value="{{ restaurante.nombre }}" style="margin-bottom: 10px; width: 100%;"><br>
-        
-        <label>Dirección:</label><br>
-        <input type="text" name="direccion" value="{{ restaurante.direccion }}" style="margin-bottom: 10px; width: 100%;"><br>
-        
-        <label>Teléfono:</label><br>
-        <input type="text" name="telefono" id="telefono" maxlength="10" value="{{ restaurante.telefono|default_if_none:'' }}" style="margin-bottom: 20px; width: 100%;"><br>
+            <label>Nombre del Restaurante:</label><br>
+            <input type="text" name="nombre" value="{{ restaurante.nombre }}" style="margin-bottom: 10px; width: 100%;"><br>
+            
+            <label>Dirección:</label><br>
+            <input type="text" name="direccion" value="{{ restaurante.direccion }}" style="margin-bottom: 10px; width: 100%;"><br>
+            
+            <label>Teléfono:</label><br>
+            <input type="text" name="telefono" id="telefono" maxlength="10" value="{{ restaurante.telefono|default_if_none:'' }}" style="margin-bottom: 20px; width: 100%;"><br>
 
-        <label>Contraseña:</label><br>
-        <input type="text" name="contrasena" value="{{ restaurante.contrasena }}" style="margin-bottom: 20px; width: 100%;"><br>
+            <label>Contraseña:</label><br>
+            <input type="text" name="contrasena" value="{{ restaurante.contrasena }}" style="margin-bottom: 20px; width: 100%;"><br>
+
+        <label>Foto del restaurante:</label><br>
+{% if restaurante.imagen %}
+    <img src="{{ restaurante.imagen.url }}" style="height:80px; border-radius:4px; margin-bottom:8px; display:block;">
+{% endif %}
+<input type="file" name="imagen" accept="image/*" style="margin-bottom: 20px; width: 100%;"><br>
 
         <!-- Botones -->
         <button type="submit" style="padding: 10px; background: green; color: white; border: none; cursor: pointer;">Guardar Datos</button>
