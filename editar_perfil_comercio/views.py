@@ -52,17 +52,14 @@ def editar_perfil(request):
             messages.warning(request, "El teléfono ya está registrado en otro comercio. Por favor ingresa uno diferente.")
             return render(request, 'editar_comercio.html', contexto)
         
-        #se revisa si haya algun restaurante con la nueva contraseña
-        if nueva_contrasena and otros_restaurantes.filter(contrasena=nueva_contrasena).exists():
-            messages.warning(request, "La contraseña ya está registrada en otro comercio. Por favor ingresa una diferente.")
-            return render(request, 'editar_comercio.html', contexto)
             
         # FLUJO NORMAL: Se conecta, guarda datos en la base de datos temporal
         if restaurante_actual:
             restaurante_actual.nombre = nuevo_nombre
             restaurante_actual.direccion = nueva_direccion
             restaurante_actual.telefono = nuevo_telefono
-            restaurante_actual.contrasena = nueva_contrasena
+            if nueva_contrasena:
+                restaurante_actual.contrasena = nueva_contrasena
             nueva_imagen = request.FILES.get('imagen')
             if nueva_imagen:
                 restaurante_actual.imagen = nueva_imagen
